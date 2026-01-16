@@ -26,11 +26,7 @@ export function* check(_conf: RuleConfig, line: Line): Generator<LintProblem> {
   // Check for trailing whitespace
   const trimmed = content.trimEnd();
   if (trimmed.length < content.length) {
-    yield new LintProblem(
-      line.lineNo,
-      trimmed.length + 1,
-      'trailing spaces'
-    );
+    yield new LintProblem(line.lineNo, trimmed.length + 1, 'trailing spaces');
   }
 }
 

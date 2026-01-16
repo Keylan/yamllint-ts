@@ -95,11 +95,7 @@ export function* check(conf: RuleConfig, line: Line): Generator<LintProblem> {
   }
 
   if (blankLines > max) {
-    yield new LintProblem(
-      line.lineNo,
-      1,
-      `too many blank lines (${blankLines} > ${max})`
-    );
+    yield new LintProblem(line.lineNo, 1, `too many blank lines (${blankLines} > ${max})`);
   }
 }
 

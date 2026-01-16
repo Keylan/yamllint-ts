@@ -15,12 +15,10 @@ describe('truthy', () => {
   describe('enabled', () => {
     it('should detect truthy values in keys and values', () => {
       const conf = 'truthy: enable\n' + 'document-start: disable\n';
-      check(
-        '---\n' + '1: True\n' + 'True: 1\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 4], problem2: [3, 1] }
-      );
+      check('---\n' + '1: True\n' + 'True: 1\n', conf, RULE_ID, {
+        problem1: [2, 4],
+        problem2: [3, 1],
+      });
       check('---\n' + '1: "True"\n' + '"True": 1\n', conf, RULE_ID);
       check(
         '%YAML 1.1\n' +
@@ -93,11 +91,7 @@ describe('truthy', () => {
   describe('different-allowed-values', () => {
     it('should allow custom allowed values', () => {
       const conf = 'truthy:\n' + '  allowed-values: ["yes", "no"]\n';
-      check(
-        '---\n' + 'key1: foo\n' + 'key2: yes\n' + 'key3: bar\n' + 'key4: no\n',
-        conf,
-        RULE_ID
-      );
+      check('---\n' + 'key1: foo\n' + 'key2: yes\n' + 'key3: bar\n' + 'key4: no\n', conf, RULE_ID);
       check(
         '%YAML 1.1\n' +
           '---\n' +
@@ -116,18 +110,9 @@ describe('truthy', () => {
   describe('combined-allowed-values', () => {
     it('should allow combined allowed values', () => {
       const conf = 'truthy:\n' + '  allowed-values: ["yes", "no", "true", "false"]\n';
+      check('---\n' + 'key1: foo\n' + 'key2: yes\n' + 'key3: bar\n' + 'key4: no\n', conf, RULE_ID);
       check(
-        '---\n' + 'key1: foo\n' + 'key2: yes\n' + 'key3: bar\n' + 'key4: no\n',
-        conf,
-        RULE_ID
-      );
-      check(
-        '---\n' +
-          'key1: true\n' +
-          'key2: Yes\n' +
-          'key3: false\n' +
-          'key4: no\n' +
-          'key5: yes\n',
+        '---\n' + 'key1: true\n' + 'key2: Yes\n' + 'key3: false\n' + 'key4: no\n' + 'key5: yes\n',
         conf,
         RULE_ID,
         { problem1: [3, 7] }
@@ -169,23 +154,13 @@ describe('truthy', () => {
         { problem1: [2, 7], problem2: [3, 7], problem3: [4, 7], problem4: [5, 7] }
       );
       check(
-        '%YAML 1.1\n' +
-          '---\n' +
-          'key1: true\n' +
-          'key2: yes\n' +
-          'key3: false\n' +
-          'key4: no\n',
+        '%YAML 1.1\n' + '---\n' + 'key1: true\n' + 'key2: yes\n' + 'key3: false\n' + 'key4: no\n',
         conf,
         RULE_ID,
         { problem1: [3, 7], problem2: [4, 7], problem3: [5, 7], problem4: [6, 7] }
       );
       check(
-        '%YAML 1.2\n' +
-          '---\n' +
-          'key1: true\n' +
-          'key2: yes\n' +
-          'key3: false\n' +
-          'key4: no\n',
+        '%YAML 1.2\n' + '---\n' + 'key1: true\n' + 'key2: yes\n' + 'key3: false\n' + 'key4: no\n',
         conf,
         RULE_ID,
         { problem1: [3, 7], problem2: [5, 7] }

@@ -293,12 +293,9 @@ describe('line-length', () => {
         'line-length: {max: 20, allow-non-breakable-words: true}\n' + 'trailing-spaces: disable';
 
       it('should report long word followed by trailing spaces', () => {
-        check(
-          '---\n' + 'loooooooooong+word+and+some+space+at+the+end       \n',
-          conf,
-          RULE_ID,
-          { problem1: [2, 21] }
-        );
+        check('---\n' + 'loooooooooong+word+and+some+space+at+the+end       \n', conf, RULE_ID, {
+          problem1: [2, 21],
+        });
       });
     });
   });
@@ -398,9 +395,7 @@ describe('line-length', () => {
 
   describe('test_with_dos_newlines', () => {
     const conf =
-      'line-length: {max: 10}\n' +
-      'new-lines: {type: dos}\n' +
-      'new-line-at-end-of-file: disable';
+      'line-length: {max: 10}\n' + 'new-lines: {type: dos}\n' + 'new-line-at-end-of-file: disable';
 
     it('should allow line within limit with DOS newlines', () => {
       check('---\r\nABCD EFGHI', conf, RULE_ID);

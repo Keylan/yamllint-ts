@@ -76,11 +76,7 @@ describe('octal-values', () => {
     });
 
     it('should allow decimal and scientific notation', () => {
-      check(
-        'number-values:\n' + '  - 0.10\n' + '  - .01\n' + '  - 0e3\n',
-        conf,
-        RULE_ID
-      );
+      check('number-values:\n' + '  - 0.10\n' + '  - .01\n' + '  - 0e3\n', conf, RULE_ID);
     });
 
     it('should allow numbers with decimal digits 8', () => {
@@ -145,11 +141,7 @@ describe('octal-values', () => {
     });
 
     it('should allow decimal and scientific notation', () => {
-      check(
-        'number-values:\n' + '  - 0.10\n' + '  - .01\n' + '  - 0e3\n',
-        conf,
-        RULE_ID
-      );
+      check('number-values:\n' + '  - 0.10\n' + '  - .01\n' + '  - 0e3\n', conf, RULE_ID);
     });
 
     it('should allow double-quoted octal strings', () => {

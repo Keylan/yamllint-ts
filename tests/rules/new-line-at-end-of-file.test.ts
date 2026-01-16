@@ -12,9 +12,7 @@ const RULE_ID = 'new-line-at-end-of-file';
 describe('new-line-at-end-of-file', () => {
   describe('disabled', () => {
     const conf =
-      'new-line-at-end-of-file: disable\n' +
-      'empty-lines: disable\n' +
-      'document-start: disable';
+      'new-line-at-end-of-file: disable\n' + 'empty-lines: disable\n' + 'document-start: disable';
 
     it('should allow empty string', () => {
       check('', conf, RULE_ID, {});
@@ -35,9 +33,7 @@ describe('new-line-at-end-of-file', () => {
 
   describe('enabled', () => {
     const conf =
-      'new-line-at-end-of-file: enable\n' +
-      'empty-lines: disable\n' +
-      'document-start: disable';
+      'new-line-at-end-of-file: enable\n' + 'empty-lines: disable\n' + 'document-start: disable';
 
     it('should allow empty string', () => {
       check('', conf, RULE_ID, {});

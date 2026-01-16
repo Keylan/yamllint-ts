@@ -64,11 +64,7 @@ export class LintProblem {
 
   /** Check equality with another LintProblem */
   equals(other: LintProblem): boolean {
-    return (
-      this.line === other.line &&
-      this.column === other.column &&
-      this.rule === other.rule
-    );
+    return this.line === other.line && this.column === other.column && this.rule === other.rule;
   }
 
   /** Compare for sorting (by line, then column) */
@@ -227,7 +223,7 @@ export interface RuleConfig extends BaseRuleConfig {
  */
 export type TokenRuleCheck<
   TConfig extends BaseRuleConfig = RuleConfig,
-  TContext extends BaseRuleContext = BaseRuleContext
+  TContext extends BaseRuleContext = BaseRuleContext,
 > = (
   conf: TConfig,
   token: TokenWithMarks,
@@ -257,21 +253,21 @@ export type RuleCheckFunction =
 
 /**
  * Rule interface - defines the structure of a linting rule.
- * 
+ *
  * Generic parameters allow rules to specify their own typed config and context:
  * - TConfig: The rule's configuration interface (must extend BaseRuleConfig)
  * - TContext: The rule's context interface (must extend BaseRuleContext)
- * 
+ *
  * @example
  * // Typed rule with specific config and context
  * const rule: TokenRule<AnchorsConfig, AnchorsContext> = { ... };
- * 
+ *
  * // Legacy rule using defaults
  * const rule: Rule = { ... };
  */
 export interface Rule<
   TConfig extends BaseRuleConfig = RuleConfig,
-  TContext extends BaseRuleContext = BaseRuleContext
+  TContext extends BaseRuleContext = BaseRuleContext,
 > {
   /** Unique identifier for the rule (e.g., 'line-length') */
   ID: string;
@@ -294,31 +290,31 @@ export interface Rule<
  */
 export type TokenRule<
   TConfig extends BaseRuleConfig = RuleConfig,
-  TContext extends BaseRuleContext = BaseRuleContext
+  TContext extends BaseRuleContext = BaseRuleContext,
 > = Rule<TConfig, TContext> & { TYPE: 'token'; check: TokenRuleCheck<TConfig, TContext> };
 
 /**
  * Convenience type for comment-based rules with typed config.
  */
-export type CommentRule<TConfig extends BaseRuleConfig = RuleConfig> = 
-  Rule<TConfig, BaseRuleContext> & { TYPE: 'comment'; check: CommentRuleCheck<TConfig> };
+export type CommentRule<TConfig extends BaseRuleConfig = RuleConfig> = Rule<
+  TConfig,
+  BaseRuleContext
+> & { TYPE: 'comment'; check: CommentRuleCheck<TConfig> };
 
 /**
  * Convenience type for line-based rules with typed config.
  */
-export type LineRule<TConfig extends BaseRuleConfig = RuleConfig> = 
-  Rule<TConfig, BaseRuleContext> & { TYPE: 'line'; check: LineRuleCheck<TConfig> };
+export type LineRule<TConfig extends BaseRuleConfig = RuleConfig> = Rule<
+  TConfig,
+  BaseRuleContext
+> & { TYPE: 'line'; check: LineRuleCheck<TConfig> };
 
 // =============================================================================
 // Configuration Types
 // =============================================================================
 
 /** Raw rule configuration from YAML config file */
-export type RawRuleConfig =
-  | 'enable'
-  | 'disable'
-  | boolean
-  | Record<string, unknown>;
+export type RawRuleConfig = 'enable' | 'disable' | boolean | Record<string, unknown>;
 
 /** Raw configuration as parsed from YAML */
 export interface RawConfig {

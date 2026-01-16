@@ -94,13 +94,7 @@ describe('colons', () => {
 
     it('should allow no space before colons', () => {
       check(
-        '---\n' +
-          'object:\n' +
-          '  k1:\n' +
-          '    - a\n' +
-          '    - b\n' +
-          '  k2: v2\n' +
-          '...\n',
+        '---\n' + 'object:\n' + '  k1:\n' + '    - a\n' + '    - b\n' + '  k2: v2\n' + '...\n',
         conf,
         RULE_ID,
         {}
@@ -109,13 +103,7 @@ describe('colons', () => {
 
     it('should detect space before colon in mapping', () => {
       check(
-        '---\n' +
-          'object:\n' +
-          '  k1 :\n' +
-          '    - a\n' +
-          '    - b\n' +
-          '  k2: v2\n' +
-          '...\n',
+        '---\n' + 'object:\n' + '  k1 :\n' + '    - a\n' + '    - b\n' + '  k2: v2\n' + '...\n',
         conf,
         RULE_ID,
         { problem1: [3, 5] }
@@ -176,21 +164,13 @@ describe('colons', () => {
     const conf = 'colons: {max-spaces-before: 0, max-spaces-after: 1}\nindentation: disable';
 
     it('should allow explicit block mapping', () => {
-      check(
-        '---\n' + 'object:\n' + '  ? key\n' + '  : value\n' + '...\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('---\n' + 'object:\n' + '  ? key\n' + '  : value\n' + '...\n', conf, RULE_ID, {});
     });
 
     it('should detect space before colon with explicit block mapping', () => {
-      check(
-        '---\n' + 'object :\n' + '  ? key\n' + '  : value\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 7] }
-      );
+      check('---\n' + 'object :\n' + '  ? key\n' + '  : value\n' + '...\n', conf, RULE_ID, {
+        problem1: [2, 7],
+      });
     });
 
     it('should allow multi-line key at root', () => {
@@ -254,30 +234,21 @@ describe('colons', () => {
     });
 
     it('should detect extra space after colon in nested mapping with array', () => {
-      check(
-        '---\n' + 'object:\n' + '  k1:  [a, b]\n' + '  k2: string\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 7] }
-      );
+      check('---\n' + 'object:\n' + '  k1:  [a, b]\n' + '  k2: string\n', conf, RULE_ID, {
+        problem1: [3, 7],
+      });
     });
 
     it('should detect extra space after colon in nested mapping with string', () => {
-      check(
-        '---\n' + 'object:\n' + '  k1: [a, b]\n' + '  k2:  string\n',
-        conf,
-        RULE_ID,
-        { problem1: [4, 7] }
-      );
+      check('---\n' + 'object:\n' + '  k1: [a, b]\n' + '  k2:  string\n', conf, RULE_ID, {
+        problem1: [4, 7],
+      });
     });
 
     it('should detect extra space after colon in flow mapping', () => {
-      check(
-        '---\n' + 'object:\n' + '  other: {key:  value}\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 16] }
-      );
+      check('---\n' + 'object:\n' + '  other: {key:  value}\n' + '...\n', conf, RULE_ID, {
+        problem1: [3, 16],
+      });
     });
 
     it('should detect multiple extra spaces after colons in nested flow mapping', () => {
@@ -338,12 +309,9 @@ describe('colons', () => {
     });
 
     it('should detect too many spaces in flow mapping', () => {
-      check(
-        '---\n' + 'object:\n' + '  other: {key:    value}\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 18] }
-      );
+      check('---\n' + 'object:\n' + '  other: {key:    value}\n' + '...\n', conf, RULE_ID, {
+        problem1: [3, 18],
+      });
     });
   });
 
@@ -351,21 +319,13 @@ describe('colons', () => {
     const conf = 'colons: {max-spaces-before: -1, max-spaces-after: 1}\nindentation: disable';
 
     it('should allow explicit block mapping with single space', () => {
-      check(
-        '---\n' + 'object:\n' + '  ? key\n' + '  : value\n' + '...\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('---\n' + 'object:\n' + '  ? key\n' + '  : value\n' + '...\n', conf, RULE_ID, {});
     });
 
     it('should detect extra space after colon in explicit block mapping', () => {
-      check(
-        '---\n' + 'object:\n' + '  ? key\n' + '  :  value\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [4, 5] }
-      );
+      check('---\n' + 'object:\n' + '  ? key\n' + '  :  value\n' + '...\n', conf, RULE_ID, {
+        problem1: [4, 5],
+      });
     });
   });
 

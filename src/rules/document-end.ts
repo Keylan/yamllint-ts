@@ -37,22 +37,13 @@ export function* check(
     const isStreamEnd = token.type === TokenType.StreamEnd;
     const isStart = token.type === TokenType.DocumentStart;
     const prevIsEndOrStreamStart =
-      prev?.type === TokenType.DocumentEnd ||
-      prev?.type === TokenType.StreamStart;
+      prev?.type === TokenType.DocumentEnd || prev?.type === TokenType.StreamStart;
     const prevIsDirective = prev?.type === TokenType.Directive;
 
     if (isStreamEnd && !prevIsEndOrStreamStart) {
-      yield new LintProblem(
-        token.startMark.line,
-        1,
-        'missing document end "..."'
-      );
+      yield new LintProblem(token.startMark.line, 1, 'missing document end "..."');
     } else if (isStart && !prevIsEndOrStreamStart && !prevIsDirective) {
-      yield new LintProblem(
-        token.startMark.line + 1,
-        1,
-        'missing document end "..."'
-      );
+      yield new LintProblem(token.startMark.line + 1, 1, 'missing document end "..."');
     }
   } else {
     // Document end is forbidden

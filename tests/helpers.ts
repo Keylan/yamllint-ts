@@ -4,7 +4,6 @@
  */
 
 import { expect } from 'vitest';
-import { LintProblem } from '../src/types.js';
 
 // Import rules module to initialize the registry
 import '../src/rules/index.js';

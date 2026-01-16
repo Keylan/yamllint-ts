@@ -16,8 +16,14 @@ import {
   isComment,
   isLine,
 } from './parser.js';
-import { YamlLintConfig } from './config.js';
-import { LintProblem, type RuleConfig, type Comment, type Token, type TokenWithMarks } from './types.js';
+import type { YamlLintConfig } from './config.js';
+import {
+  LintProblem,
+  type RuleConfig,
+  type Comment,
+  type Token,
+  type TokenWithMarks,
+} from './types.js';
 
 // =============================================================================
 // Directive Patterns
@@ -322,11 +328,7 @@ function* _run(
 
   for (const problem of getCosmeticProblems(buffer, conf, filepath)) {
     // Insert syntax error at the right place
-    if (
-      syntaxError &&
-      syntaxError.line <= problem.line &&
-      syntaxError.column <= problem.column
-    ) {
+    if (syntaxError && syntaxError.line <= problem.line && syntaxError.column <= problem.column) {
       yield syntaxError;
       // Clear syntax error - we've yielded it
       syntaxError = null;

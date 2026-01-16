@@ -16,11 +16,7 @@ const BOM_UTF8 = Buffer.from([0xef, 0xbb, 0xbf]);
 /**
  * Encoding names compatible with Node.js Buffer
  */
-export type Encoding =
-  | 'utf-8'
-  | 'utf-16le'
-  | 'utf-16be'
-  | 'utf8'; // Node.js normalizes these
+export type Encoding = 'utf-8' | 'utf-16le' | 'utf-16be' | 'utf8'; // Node.js normalizes these
 
 /**
  * Detect the character encoding of a YAML stream.
@@ -217,9 +213,7 @@ export function autoDecode(streamData: Buffer): string {
  * @param paths - File paths to read
  * @returns Generator yielding lines from all files
  */
-export async function* linesInFiles(
-  paths: string[]
-): AsyncGenerator<string, void, unknown> {
+export async function* linesInFiles(paths: string[]): AsyncGenerator<string, void, unknown> {
   const fs = await import('fs/promises');
 
   for (const path of paths) {
@@ -239,6 +233,7 @@ export async function* linesInFiles(
  * @returns Array of lines from all files
  */
 export function linesInFilesSync(paths: string[]): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/consistent-type-imports
   const fs = require('fs') as typeof import('fs');
   const lines: string[] = [];
 

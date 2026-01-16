@@ -45,7 +45,11 @@ export function* check(conf: RuleConfig, line: Line): Generator<LintProblem> {
     if (buffer[lineEnd] === '\n') {
       hasNewline = true;
       isDos = false;
-    } else if (buffer[lineEnd] === '\r' && lineEnd + 1 < buffer.length && buffer[lineEnd + 1] === '\n') {
+    } else if (
+      buffer[lineEnd] === '\r' &&
+      lineEnd + 1 < buffer.length &&
+      buffer[lineEnd + 1] === '\n'
+    ) {
       hasNewline = true;
       isDos = true;
     }

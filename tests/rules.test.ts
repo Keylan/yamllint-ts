@@ -3,8 +3,8 @@
  * Tests for line-based rules
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
-import { LintProblem } from '../src/types.js';
+import { describe, it, expect } from 'vitest';
+import type { LintProblem } from '../src/types.js';
 
 // Import rules module to initialize the registry
 import '../src/rules/index.js';
@@ -120,7 +120,8 @@ describe('line-length rule', () => {
   it('should allow non-breakable words (URLs on their own line)', () => {
     // Note: allow-non-breakable-words allows URLs on their own line (after indentation)
     // For "key: url" patterns, use allow-non-breakable-inline-mappings
-    const yaml = '---\nthis:\n  is:\n    - a:\n        http://localhost/very/long/url/that/exceeds\n';
+    const yaml =
+      '---\nthis:\n  is:\n    - a:\n        http://localhost/very/long/url/that/exceeds\n';
     const problems = lint(yaml, {
       'line-length': { max: 40, 'allow-non-breakable-words': true },
     });

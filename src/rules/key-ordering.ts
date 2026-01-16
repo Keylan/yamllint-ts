@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 
 export const ID = 'key-ordering';
@@ -73,10 +79,7 @@ export function* check(
   const ignoredKeys = conf['ignored-keys'];
 
   // Track mapping and sequence starts
-  if (
-    token.type === TokenType.BlockMappingStart ||
-    token.type === TokenType.FlowMappingStart
-  ) {
+  if (token.type === TokenType.BlockMappingStart || token.type === TokenType.FlowMappingStart) {
     stack.push({ type: MAP, keys: [] });
   } else if (
     token.type === TokenType.BlockSequenceStart ||
@@ -100,7 +103,7 @@ export function* check(
       const keyValue = next.value ?? '';
 
       // Check if key matches any ignored pattern
-      const isIgnored = ignoredKeys.some(pattern => {
+      const isIgnored = ignoredKeys.some((pattern) => {
         try {
           return new RegExp(pattern).test(keyValue);
         } catch {
@@ -113,7 +116,7 @@ export function* check(
 
         // Check if any existing key should come after this one
         const isOutOfOrder = parent.keys.some(
-          existingKey => stringCompare(keyValue, existingKey) < 0
+          (existingKey) => stringCompare(keyValue, existingKey) < 0
         );
 
         if (isOutOfOrder) {

@@ -9,7 +9,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 
 export const ID = 'quoted-strings';
@@ -17,7 +23,7 @@ export const TYPE = 'token' as const;
 
 export const CONF = {
   'quote-type': ['any', 'single', 'double', 'consistent'],
-  'required': [true, false, 'only-when-needed'],
+  required: [true, false, 'only-when-needed'],
   'extra-required': [String],
   'extra-allowed': [String],
   'allow-quoted-quotes': Boolean,
@@ -26,7 +32,7 @@ export const CONF = {
 
 export const DEFAULT = {
   'quote-type': 'any',
-  'required': true,
+  required: true,
   'extra-required': [] as string[],
   'extra-allowed': [] as string[],
   'allow-quoted-quotes': false,
@@ -40,7 +46,7 @@ export const DEFAULT = {
 /** Typed configuration for the quoted-strings rule */
 export interface QuotedStringsConfig extends BaseRuleConfig {
   'quote-type': 'any' | 'single' | 'double' | 'consistent';
-  'required': boolean | 'only-when-needed';
+  required: boolean | 'only-when-needed';
   'extra-required': string[];
   'extra-allowed': string[];
   'allow-quoted-quotes': boolean;
@@ -87,10 +93,7 @@ function quoteMatch(
  */
 function hasQuotedQuotes(value: string, style: string | null): boolean {
   if (!style) return false;
-  return (
-    (style === "'" && value.includes('"')) ||
-    (style === '"' && value.includes("'"))
-  );
+  return (style === "'" && value.includes('"')) || (style === '"' && value.includes("'"));
 }
 
 /**
@@ -131,34 +134,34 @@ function hasBackslashLineContinuation(tokenValue: string, quoteStyle: string | n
 function quotesAreNeeded(value: string, isInsideFlow: boolean): boolean {
   // Empty string needs quotes
   if (value === '') return true;
-  
+
   // Values that start with special characters need quotes
   // Note: % is reserved for directives
   if (/^[&*!|>%@`]/.test(value)) return true;
-  
+
   // Values that start with flow indicators need quotes (would be interpreted as flow collection)
-  if (/^[\[{]/.test(value)) return true;
-  
+  if (/^[[{]/.test(value)) return true;
+
   // Values containing flow indicators inside a flow context need quotes
-  if (isInsideFlow && /[,\[\]{}]/.test(value)) return true;
-  
+  if (isInsideFlow && /[,[\]{}]/.test(value)) return true;
+
   // Values that start with quotes need quotes
   if (/^['"]/.test(value)) return true;
-  
+
   // Values containing colons followed by space need quotes (mapping indicator)
   if (/: /.test(value) || value.endsWith(':')) return true;
-  
+
   // Values containing hash preceded by space (comment indicator) need quotes
   if (/ #/.test(value)) return true;
-  
+
   // Values that look like numbers, booleans, etc. need quotes to preserve string type
   if (/^(true|false|yes|no|on|off|null|~)$/i.test(value)) return true;
   if (/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(value)) return true;
-  
+
   // Values starting with block entry indicator need quotes
   // "- item" needs quotes because "- " at start is block entry
   if (/^- /.test(value) || value === '-') return true;
-  
+
   // Values starting with explicit key indicator need quotes
   if (/^\? /.test(value) || value === '?') return true;
 
@@ -173,15 +176,9 @@ export function* check(
   _nextnext: TokenWithMarks | null,
   context: QuotedStringsContext
 ): Generator<LintProblem> {
-  if (
-    token.type === TokenType.FlowMappingStart ||
-    token.type === TokenType.FlowSequenceStart
-  ) {
+  if (token.type === TokenType.FlowMappingStart || token.type === TokenType.FlowSequenceStart) {
     context.flow_nest_count++;
-  } else if (
-    token.type === TokenType.FlowMappingEnd ||
-    token.type === TokenType.FlowSequenceEnd
-  ) {
+  } else if (token.type === TokenType.FlowMappingEnd || token.type === TokenType.FlowSequenceEnd) {
     context.flow_nest_count--;
   }
 
@@ -197,9 +194,11 @@ export function* check(
   if (token.type !== TokenType.Scalar) {
     // Clear pending tag if we see a non-scalar, non-key structure token
     // (except for BlockMappingStart and KeyToken which come between tag and scalar)
-    if (token.type !== TokenType.BlockMappingStart && 
-        token.type !== TokenType.Key &&
-        token.type !== TokenType.FlowMappingStart) {
+    if (
+      token.type !== TokenType.BlockMappingStart &&
+      token.type !== TokenType.Key &&
+      token.type !== TokenType.FlowMappingStart
+    ) {
       context.pending_tag = null;
     }
     return;
@@ -325,7 +324,7 @@ export function* check(
       msg = `string ${node} is not quoted with ${quoteType} quotes`;
     } else if (!quoteStyle) {
       // Check extra-required patterns
-      const isExtraRequired = extraRequired.some(pattern => {
+      const isExtraRequired = extraRequired.some((pattern) => {
         try {
           return new RegExp(pattern).test(tokenValue);
         } catch {
@@ -341,15 +340,20 @@ export function* check(
     const isInsideFlow = context.flow_nest_count > 0;
     // Double-quoted strings with backslash line continuation need quotes
     const needsBackslashEscape = hasBackslashLineContinuation(tokenValue, quoteStyle);
-    if (quoteStyle && innerValue && !quotesAreNeeded(innerValue, isInsideFlow) && !needsBackslashEscape) {
-      const isExtraRequired = extraRequired.some(pattern => {
+    if (
+      quoteStyle &&
+      innerValue &&
+      !quotesAreNeeded(innerValue, isInsideFlow) &&
+      !needsBackslashEscape
+    ) {
+      const isExtraRequired = extraRequired.some((pattern) => {
         try {
           return new RegExp(pattern).test(innerValue);
         } catch {
           return false;
         }
       });
-      const isExtraAllowed = extraAllowed.some(pattern => {
+      const isExtraAllowed = extraAllowed.some((pattern) => {
         try {
           return new RegExp(pattern).test(innerValue);
         } catch {
@@ -367,7 +371,7 @@ export function* check(
       // When used, quotes need to match config
       msg = `string ${node} is not quoted with ${quoteType} quotes`;
     } else if (!quoteStyle && extraRequired.length > 0) {
-      const isExtraRequired = extraRequired.some(pattern => {
+      const isExtraRequired = extraRequired.some((pattern) => {
         try {
           return new RegExp(pattern).test(tokenValue);
         } catch {
@@ -381,11 +385,7 @@ export function* check(
   }
 
   if (msg !== null) {
-    yield new LintProblem(
-      token.startMark.line + 1,
-      token.startMark.column + 1,
-      msg
-    );
+    yield new LintProblem(token.startMark.line + 1, token.startMark.column + 1, msg);
   }
 }
 

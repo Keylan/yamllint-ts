@@ -8,7 +8,8 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type Rule, type RuleConfig, type TokenWithMarks } from '../types.js';
+import type { LintProblem } from '../types.js';
+import { type Rule, type RuleConfig, type TokenWithMarks } from '../types.js';
 import { TokenType } from '../parser.js';
 import { spacesAfter, spacesBefore, isExplicitKey } from './common.js';
 
@@ -41,8 +42,7 @@ export function* check(
     // Exception: don't check if preceded by alias token with no space
     // (e.g., *alias: value)
     const isAfterAlias =
-      prev?.type === TokenType.Alias &&
-      token.startMark.pointer - prev.endMark.pointer === 1;
+      prev?.type === TokenType.Alias && token.startMark.pointer - prev.endMark.pointer === 1;
 
     if (!isAfterAlias) {
       const problem = spacesBefore(token, prev, next, {

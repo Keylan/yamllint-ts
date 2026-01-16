@@ -302,12 +302,12 @@ function createTokenFromCST(
     // The raw source is still used for position calculation
     value: resolvedValue !== undefined ? resolvedValue : source,
   };
-  
+
   // Add style for scalar tokens
   if (scalarStyle !== undefined) {
     token.style = scalarStyle ?? undefined;
   }
-  
+
   return token;
 }
 
@@ -321,7 +321,14 @@ export type ScalarStyle = 'block' | "'" | '"' | null;
  */
 function collectCSTTokens(
   node: CSTNode | CSTNode[] | undefined,
-  tokens: { type: string; offset: number; source: string; isBlockStart?: boolean; scalarStyle?: ScalarStyle; resolvedValue?: string }[]
+  tokens: {
+    type: string;
+    offset: number;
+    source: string;
+    isBlockStart?: boolean;
+    scalarStyle?: ScalarStyle;
+    resolvedValue?: string;
+  }[]
 ): void {
   if (!node) return;
 
@@ -333,17 +340,17 @@ function collectCSTTokens(
   }
 
   const cstType = node.type;
-  
+
   // Handle nodes without type (map/seq items)
   if (!cstType) {
     if (node.start) collectCSTTokens(node.start, tokens);
-    
+
     // Emit Key token before key scalar
     if (node.key && node.key.offset !== undefined) {
       tokens.push({ type: TokenType.Key, offset: node.key.offset, source: '' });
       collectCSTTokens(node.key, tokens);
     }
-    
+
     if (node.sep) collectCSTTokens(node.sep, tokens);
     if (node.value) collectCSTTokens(node.value, tokens);
     if (node.end) collectCSTTokens(node.end, tokens);
@@ -352,9 +359,19 @@ function collectCSTTokens(
 
   // Emit block structure tokens
   if (cstType === 'block-map' && node.offset !== undefined) {
-    tokens.push({ type: TokenType.BlockMappingStart, offset: node.offset, source: '', isBlockStart: true });
+    tokens.push({
+      type: TokenType.BlockMappingStart,
+      offset: node.offset,
+      source: '',
+      isBlockStart: true,
+    });
   } else if (cstType === 'block-seq' && node.offset !== undefined) {
-    tokens.push({ type: TokenType.BlockSequenceStart, offset: node.offset, source: '', isBlockStart: true });
+    tokens.push({
+      type: TokenType.BlockSequenceStart,
+      offset: node.offset,
+      source: '',
+      isBlockStart: true,
+    });
   }
 
   // Process children
@@ -364,12 +381,12 @@ function collectCSTTokens(
     collectCSTTokens(node.key, tokens);
   }
   if (node.sep) collectCSTTokens(node.sep, tokens);
-  
+
   // Process value for containers, but not for scalars (they ARE the value)
   if (node.value && !cstType.includes('scalar')) {
     collectCSTTokens(node.value, tokens);
   }
-  
+
   if (node.items) collectCSTTokens(node.items, tokens);
   if (node.end) collectCSTTokens(node.end, tokens);
 
@@ -379,7 +396,7 @@ function collectCSTTokens(
     // Determine scalar style based on CST type
     let scalarStyle: ScalarStyle = null;
     let resolvedValue: string | undefined;
-    
+
     if (cstType === 'block-scalar') {
       scalarStyle = 'block';
       // For block scalars, resolve to get the actual value with indentation stripped
@@ -396,7 +413,13 @@ function collectCSTTokens(
     }
     // For plain scalar, scalarStyle remains null
     // Use raw source for offset calculation, but store resolved value for rules
-    tokens.push({ type: tokenType, offset: node.offset, source: node.source, scalarStyle, resolvedValue });
+    tokens.push({
+      type: tokenType,
+      offset: node.offset,
+      source: node.source,
+      scalarStyle,
+      resolvedValue,
+    });
   }
 }
 
@@ -418,7 +441,14 @@ export function* tokenGenerator(buffer: string): Generator<TokenWithMarks> {
   yield createTokenFromCST(TokenType.StreamStart, buffer, 0, '', lineCounter);
 
   // Collect all tokens from CST
-  const rawTokens: { type: string; offset: number; source: string; isBlockStart?: boolean; scalarStyle?: ScalarStyle; resolvedValue?: string }[] = [];
+  const rawTokens: {
+    type: string;
+    offset: number;
+    source: string;
+    isBlockStart?: boolean;
+    scalarStyle?: ScalarStyle;
+    resolvedValue?: string;
+  }[] = [];
 
   for (const doc of parser.parse(buffer)) {
     collectCSTTokens(doc as CSTNode, rawTokens);
@@ -438,7 +468,7 @@ export function* tokenGenerator(buffer: string): Generator<TokenWithMarks> {
 
   // Remove duplicates (same type and offset)
   const seen = new Set<string>();
-  const uniqueTokens = rawTokens.filter(t => {
+  const uniqueTokens = rawTokens.filter((t) => {
     const key = `${t.type}:${t.offset}`;
     if (seen.has(key)) return false;
     seen.add(key);
@@ -450,7 +480,7 @@ export function* tokenGenerator(buffer: string): Generator<TokenWithMarks> {
 
   for (let i = 0; i < uniqueTokens.length; i++) {
     const token = uniqueTokens[i]!;
-    
+
     // Skip comments - handled separately
     if (token.type === 'Comment') continue;
 
@@ -462,24 +492,30 @@ export function* tokenGenerator(buffer: string): Generator<TokenWithMarks> {
     // Exception: Key tokens at same indent continue the same block-map
     while (blockStack.length > 0) {
       const topBlock = blockStack[blockStack.length - 1]!;
-      
+
       // Block ends when indentation strictly decreases
       // Keys at same indent continue the map, entries continue the seq
       // ValueToken at column 0 can appear after explicit keys (? key\n: value)
       // BlockSequenceStart/BlockEntry at same indent as mapping can be a value (implicit sequence)
-      const isMapContinuation = topBlock.type === TokenType.BlockMappingStart && 
-                                (token.type === TokenType.Key || 
-                                 token.type === TokenType.Scalar || 
-                                 token.type === TokenType.Value ||
-                                 token.type === TokenType.BlockSequenceStart ||
-                                 token.type === TokenType.BlockEntry);
-      const isSeqContinuation = topBlock.type === TokenType.BlockSequenceStart &&
-                                token.type === TokenType.BlockEntry;
-      
+      const isMapContinuation =
+        topBlock.type === TokenType.BlockMappingStart &&
+        (token.type === TokenType.Key ||
+          token.type === TokenType.Scalar ||
+          token.type === TokenType.Value ||
+          token.type === TokenType.BlockSequenceStart ||
+          token.type === TokenType.BlockEntry);
+      const isSeqContinuation =
+        topBlock.type === TokenType.BlockSequenceStart && token.type === TokenType.BlockEntry;
+
       if (pos.col < topBlock.indent && token.offset > topBlock.offset) {
         blockStack.pop();
         yield createTokenFromCST(TokenType.BlockEnd, buffer, token.offset, '', lineCounter);
-      } else if (pos.col === topBlock.indent && !isMapContinuation && !isSeqContinuation && token.offset > topBlock.offset) {
+      } else if (
+        pos.col === topBlock.indent &&
+        !isMapContinuation &&
+        !isSeqContinuation &&
+        token.offset > topBlock.offset
+      ) {
         // Same indent but not continuing the block
         blockStack.pop();
         yield createTokenFromCST(TokenType.BlockEnd, buffer, token.offset, '', lineCounter);
@@ -493,7 +529,15 @@ export function* tokenGenerator(buffer: string): Generator<TokenWithMarks> {
       blockStack.push({ type: token.type, indent: pos.col, offset: token.offset });
     }
 
-    yield createTokenFromCST(token.type, buffer, token.offset, token.source, lineCounter, token.scalarStyle, token.resolvedValue);
+    yield createTokenFromCST(
+      token.type,
+      buffer,
+      token.offset,
+      token.source,
+      lineCounter,
+      token.scalarStyle,
+      token.resolvedValue
+    );
   }
 
   // Emit remaining BlockEnd tokens
@@ -571,9 +615,7 @@ export function* commentsBetweenTokens(
 /**
  * Generate tokens and comments in document order.
  */
-export function* tokenOrCommentGenerator(
-  buffer: string
-): Generator<Token | Comment> {
+export function* tokenOrCommentGenerator(buffer: string): Generator<Token | Comment> {
   const tokens: TokenWithMarks[] = [];
 
   // Collect all tokens first
@@ -603,9 +645,7 @@ export function* tokenOrCommentGenerator(
  * Generator that mixes tokens, comments, and lines, ordering them by line number.
  * This is the main generator used by the linter.
  */
-export function* tokenOrCommentOrLineGenerator(
-  buffer: string
-): Generator<ParsedElement> {
+export function* tokenOrCommentOrLineGenerator(buffer: string): Generator<ParsedElement> {
   const tokOrComGen = tokenOrCommentGenerator(buffer);
   const lineGen = lineGenerator(buffer);
 

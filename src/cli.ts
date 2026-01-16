@@ -13,7 +13,8 @@ import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { run, LintProblem } from './linter.js';
+import type { LintProblem } from './linter.js';
+import { run } from './linter.js';
 import { YamlLintConfig, YamlLintConfigError } from './config.js';
 // Import rules to ensure they are registered before config is used
 import './rules/index.js';
@@ -38,13 +39,10 @@ const PROBLEM_LEVELS: Record<string, number> = {
 /**
  * Find all YAML files recursively.
  */
-function* findFilesRecursively(
-  items: string[],
-  conf: YamlLintConfig
-): Generator<string> {
+function* findFilesRecursively(items: string[], conf: YamlLintConfig): Generator<string> {
   for (const item of items) {
     const stat = fs.statSync(item, { throwIfNoEntry: false });
-    
+
     if (stat?.isDirectory()) {
       // Recursively walk directory
       for (const entry of walkDirectory(item)) {
@@ -63,10 +61,10 @@ function* findFilesRecursively(
  */
 function* walkDirectory(dir: string): Generator<string> {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    
+
     if (entry.isDirectory()) {
       yield* walkDirectory(fullPath);
     } else if (entry.isFile()) {
@@ -114,17 +112,17 @@ const Format = {
     // Add padding (accounting for ANSI codes)
     const visibleLen = `  ${problem.line}:${problem.column}`.length;
     line += ' '.repeat(Math.max(12 - visibleLen, 0));
-    
+
     if (problem.level === 'warning') {
       line += chalk.yellow(problem.level);
     } else {
       line += chalk.red(problem.level);
     }
-    
+
     // Add padding after level
     line += ' '.repeat(Math.max(9 - problem.level!.length, 0));
     line += problem.desc;
-    
+
     if (problem.rule) {
       line += `  ${chalk.dim(`(${problem.rule})`)}`;
     }
@@ -225,7 +223,7 @@ function showProblems(
  */
 function findProjectConfigFilepath(startPath: string = '.'): string | null {
   const configNames = ['.yamllint', '.yamllint.yaml', '.yamllint.yml'];
-  
+
   let currentPath = path.resolve(startPath);
   const homePath = os.homedir();
   const rootPath = path.parse(currentPath).root;
@@ -237,7 +235,7 @@ function findProjectConfigFilepath(startPath: string = '.'): string | null {
         return configPath;
       }
     }
-    
+
     const parentPath = path.dirname(currentPath);
     if (parentPath === currentPath) break;
     currentPath = parentPath;
@@ -253,11 +251,11 @@ function getUserGlobalConfigPath(): string {
   if (process.env.YAMLLINT_CONFIG_FILE) {
     return path.resolve(process.env.YAMLLINT_CONFIG_FILE);
   }
-  
+
   if (process.env.XDG_CONFIG_HOME) {
     return path.join(process.env.XDG_CONFIG_HOME, 'yamllint', 'config');
   }
-  
+
   return path.join(os.homedir(), '.config', 'yamllint', 'config');
 }
 
@@ -295,7 +293,7 @@ async function main(): Promise<void> {
 
   // Load configuration
   let conf: YamlLintConfig;
-  
+
   try {
     if (options.configData) {
       let configData = options.configData;
@@ -346,7 +344,7 @@ async function main(): Promise<void> {
   // Lint files
   for (const file of findFilesRecursively(files, conf)) {
     const filepath = file.replace(/^\.\//, '');
-    
+
     try {
       const content = fs.readFileSync(file);
       const problems = run(content, conf, filepath);
@@ -362,12 +360,12 @@ async function main(): Promise<void> {
   if (options.stdin) {
     try {
       const chunks: Buffer[] = [];
-      
+
       // Read all data from stdin
       for await (const chunk of process.stdin) {
         chunks.push(Buffer.from(chunk));
       }
-      
+
       const content = Buffer.concat(chunks);
       const problems = run(content, conf, null);
       const level = showProblems(problems, 'stdin', options.format, options.noWarnings);

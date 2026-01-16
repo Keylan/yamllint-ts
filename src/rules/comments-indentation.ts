@@ -84,11 +84,7 @@ export function* check(_conf: RuleConfig, comment: Comment): Generator<LintProbl
   const commentIndent = comment.columnNo - 1;
 
   if (commentIndent !== prevLineIndent && commentIndent !== nextLineIndent) {
-    yield new LintProblem(
-      comment.lineNo,
-      comment.columnNo,
-      'comment not indented like content'
-    );
+    yield new LintProblem(comment.lineNo, comment.columnNo, 'comment not indented like content');
   }
 }
 

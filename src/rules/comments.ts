@@ -66,13 +66,14 @@ export function* check(conf: RuleConfig, comment: Comment): Generator<LintProble
       }
 
       // Check if there's a space (or newline/end) after the #
-      if (charAfterHash !== ' ' && charAfterHash !== '\n' && charAfterHash !== '\r' && charAfterHash !== '\0') {
+      if (
+        charAfterHash !== ' ' &&
+        charAfterHash !== '\n' &&
+        charAfterHash !== '\r' &&
+        charAfterHash !== '\0'
+      ) {
         const column = comment.columnNo + (textStart - comment.pointer);
-        yield new LintProblem(
-          comment.lineNo,
-          column,
-          'missing starting space in comment'
-        );
+        yield new LintProblem(comment.lineNo, column, 'missing starting space in comment');
       }
     }
   }

@@ -78,8 +78,7 @@ export function spacesBefore(
     prev !== null &&
     prev.endMark.line === token.startMark.line &&
     // Discard tokens that end at the start of next line
-    (prev.endMark.pointer === 0 ||
-      prev.endMark.buffer[prev.endMark.pointer - 1] !== '\n')
+    (prev.endMark.pointer === 0 || prev.endMark.buffer[prev.endMark.pointer - 1] !== '\n')
   ) {
     const spaces = token.startMark.pointer - prev.endMark.pointer;
 
@@ -112,7 +111,7 @@ export function getLineIndent(token: TokenWithMarks): number {
   const pointer = token.startMark.pointer;
 
   // Find the start of the line
-  let start = buffer.lastIndexOf('\n', pointer - 1) + 1;
+  const start = buffer.lastIndexOf('\n', pointer - 1) + 1;
   let content = start;
 
   // Count spaces
@@ -175,10 +174,7 @@ export function isExplicitKey(token: TokenWithMarks): boolean {
  * @returns true if this starts a flow context
  */
 export function isFlowStart(token: TokenWithMarks): boolean {
-  return (
-    token.type === TokenType.FlowMappingStart ||
-    token.type === TokenType.FlowSequenceStart
-  );
+  return token.type === TokenType.FlowMappingStart || token.type === TokenType.FlowSequenceStart;
 }
 
 /**
@@ -188,10 +184,7 @@ export function isFlowStart(token: TokenWithMarks): boolean {
  * @returns true if this ends a flow context
  */
 export function isFlowEnd(token: TokenWithMarks): boolean {
-  return (
-    token.type === TokenType.FlowMappingEnd ||
-    token.type === TokenType.FlowSequenceEnd
-  );
+  return token.type === TokenType.FlowMappingEnd || token.type === TokenType.FlowSequenceEnd;
 }
 
 /**
@@ -210,10 +203,7 @@ export function isInFlowContext(context: { flowLevel?: number }): boolean {
  * @param token - Current token
  * @param context - Rule context to update
  */
-export function updateFlowLevel(
-  token: TokenWithMarks,
-  context: { flowLevel?: number }
-): void {
+export function updateFlowLevel(token: TokenWithMarks, context: { flowLevel?: number }): void {
   if (isFlowStart(token)) {
     context.flowLevel = (context.flowLevel ?? 0) + 1;
   } else if (isFlowEnd(token)) {

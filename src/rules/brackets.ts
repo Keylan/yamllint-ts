@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 import { spacesAfter, spacesBefore } from './common.js';
 
@@ -51,7 +57,10 @@ export type BracketsContext = BaseRuleContext;
  * Check if the next meaningful token after a FlowSequenceStart is FlowSequenceEnd.
  * This skips over BlockEnd tokens which can appear between [ and ] when brackets span multiple lines.
  */
-function isEmptyFlowSequence(next: TokenWithMarks | null, nextnext: TokenWithMarks | null): boolean {
+function isEmptyFlowSequence(
+  next: TokenWithMarks | null,
+  nextnext: TokenWithMarks | null
+): boolean {
   if (next?.type === TokenType.FlowSequenceEnd) {
     return true;
   }
@@ -92,10 +101,7 @@ export function* check(
       token.endMark.column + 1,
       'forbidden flow sequence'
     );
-  } else if (
-    token.type === TokenType.FlowSequenceStart &&
-    isEmptyFlowSequence(next, nextnext)
-  ) {
+  } else if (token.type === TokenType.FlowSequenceStart && isEmptyFlowSequence(next, nextnext)) {
     // Empty brackets - find the actual FlowSequenceEnd token for spacing check
     const endToken = next?.type === TokenType.FlowSequenceEnd ? next : nextnext;
     const problem = spacesAfter(token, prev, endToken, {

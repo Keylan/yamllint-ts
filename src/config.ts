@@ -184,10 +184,7 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
     if (typeof ignoreFiles === 'string') {
       ignoreFiles = [ignoreFiles];
     }
-    if (
-      !Array.isArray(ignoreFiles) ||
-      !ignoreFiles.every((f) => typeof f === 'string')
-    ) {
+    if (!Array.isArray(ignoreFiles) || !ignoreFiles.every((f) => typeof f === 'string')) {
       throw new YamlLintConfigError(
         'invalid config: ignore-from-file should contain valid filename(s), either as a list or string'
       );
@@ -196,7 +193,7 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
   }
   // Handle ignore
   else if ('ignore' in conf) {
-    let ignorePatterns = conf['ignore'];
+    const ignorePatterns = conf['ignore'];
     if (typeof ignorePatterns === 'string') {
       result.ignore = IgnorePatternImpl.fromLines(ignorePatterns.split('\n'));
     } else if (
@@ -205,18 +202,14 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
     ) {
       result.ignore = IgnorePatternImpl.fromLines(ignorePatterns as string[]);
     } else {
-      throw new YamlLintConfigError(
-        'invalid config: ignore should contain file patterns'
-      );
+      throw new YamlLintConfigError('invalid config: ignore should contain file patterns');
     }
   }
 
   // Handle level
   if ('level' in conf) {
     if (conf['level'] !== 'error' && conf['level'] !== 'warning') {
-      throw new YamlLintConfigError(
-        'invalid config: level should be "error" or "warning"'
-      );
+      throw new YamlLintConfigError('invalid config: level should be "error" or "warning"');
     }
     result.level = conf['level'] as ProblemLevel;
   }
@@ -243,20 +236,18 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
       // In Python yamllint:
       // - If CONF[option] is a list, the config value must be a LIST of values from that list
       // - If CONF[option] is a tuple, the config value is a SINGLE value from the tuple
-      // 
+      //
       // Since we use arrays for both in TypeScript, we need to check:
       // - If the config value is an array, validate each element against the spec
       // - If the config value is a single value, check if it's in the spec (enum-style)
-      
+
       if (Array.isArray(optValue)) {
         // List-type option: validate each element
         const allowedValues = optSpec.filter(
           (v) => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'
         );
-        const allowedTypes = optSpec.filter(
-          (v) => v === Boolean || v === Number || v === String
-        );
-        
+        const allowedTypes = optSpec.filter((v) => v === Boolean || v === Number || v === String);
+
         for (const item of optValue) {
           const isValidLiteral = allowedValues.includes(item as string | number | boolean);
           const isValidType = allowedTypes.some((t) => {
@@ -265,7 +256,7 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
             if (t === String) return typeof item === 'string';
             return false;
           });
-          
+
           if (!isValidLiteral && !isValidType) {
             throw new YamlLintConfigError(
               `invalid config: option "${optKey}" of "${rule.ID}" should only contain values in ${JSON.stringify(optSpec)}`
@@ -277,9 +268,7 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
         const validValues = optSpec.filter(
           (v) => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'
         );
-        const validTypes = optSpec.filter(
-          (v) => v === Boolean || v === Number || v === String
-        );
+        const validTypes = optSpec.filter((v) => v === Boolean || v === Number || v === String);
 
         const isValidLiteral = validValues.includes(optValue as string | number | boolean);
         const isValidType = validTypes.some((t) => {
@@ -360,9 +349,7 @@ export class YamlLintConfig {
           // Use default config
           this.parse('extends: default');
         } else {
-          throw new YamlLintConfigError(
-            'YamlLintConfig requires either content or file, not both'
-          );
+          throw new YamlLintConfigError('YamlLintConfig requires either content or file, not both');
         }
       } else if (file !== undefined) {
         const buffer = fs.readFileSync(file);
@@ -498,10 +485,7 @@ export class YamlLintConfig {
       if (typeof ignoreFiles === 'string') {
         ignoreFiles = [ignoreFiles];
       }
-      if (
-        !Array.isArray(ignoreFiles) ||
-        !ignoreFiles.every((f) => typeof f === 'string')
-      ) {
+      if (!Array.isArray(ignoreFiles) || !ignoreFiles.every((f) => typeof f === 'string')) {
         throw new YamlLintConfigError(
           'invalid config: ignore-from-file should contain filename(s), either as a list or string'
         );
@@ -510,15 +494,10 @@ export class YamlLintConfig {
     } else if (conf.ignore) {
       if (typeof conf.ignore === 'string') {
         this.ignore = IgnorePatternImpl.fromLines(conf.ignore.split('\n'));
-      } else if (
-        Array.isArray(conf.ignore) &&
-        conf.ignore.every((p) => typeof p === 'string')
-      ) {
+      } else if (Array.isArray(conf.ignore) && conf.ignore.every((p) => typeof p === 'string')) {
         this.ignore = IgnorePatternImpl.fromLines(conf.ignore);
       } else {
-        throw new YamlLintConfigError(
-          'invalid config: ignore should contain file patterns'
-        );
+        throw new YamlLintConfigError('invalid config: ignore should contain file patterns');
       }
     }
 

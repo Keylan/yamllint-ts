@@ -8,7 +8,8 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type Rule, type RuleConfig, type TokenWithMarks } from '../types.js';
+import type { LintProblem } from '../types.js';
+import { type Rule, type RuleConfig, type TokenWithMarks } from '../types.js';
 import { TokenType } from '../parser.js';
 import { spacesAfter } from './common.js';
 

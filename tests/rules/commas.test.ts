@@ -89,10 +89,15 @@ describe('commas', () => {
     });
 
     it('should detect multiple spaces before commas in dict', () => {
-      check('---\n' + 'dict: {a: b , c: "1 2 3", d: e,  f: [g    , h]}\n' + '...\n', conf, RULE_ID, {
-        problem1: [2, 12],
-        problem2: [2, 42],
-      });
+      check(
+        '---\n' + 'dict: {a: b , c: "1 2 3", d: e,  f: [g    , h]}\n' + '...\n',
+        conf,
+        RULE_ID,
+        {
+          problem1: [2, 12],
+          problem2: [2, 42],
+        }
+      );
     });
 
     it('should allow multiline array with no space before comma', () => {
@@ -106,7 +111,12 @@ describe('commas', () => {
     });
 
     it('should allow multiline map with no space before comma', () => {
-      check('---\n' + 'map: {\n' + '  key1: val1,\n' + '  key2: val2,\n' + '}\n', conf, RULE_ID, {});
+      check(
+        '---\n' + 'map: {\n' + '  key1: val1,\n' + '  key2: val2,\n' + '}\n',
+        conf,
+        RULE_ID,
+        {}
+      );
     });
 
     it('should detect space before comma in multiline map', () => {
@@ -124,12 +134,9 @@ describe('commas', () => {
       '  max-spaces-after: -1';
 
     it('should detect comma at start of line in flow seq', () => {
-      check(
-        '---\n' + 'flow-seq: [1, 2, 3\n' + '           , 4, 5, 6]\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 11] }
-      );
+      check('---\n' + 'flow-seq: [1, 2, 3\n' + '           , 4, 5, 6]\n' + '...\n', conf, RULE_ID, {
+        problem1: [3, 11],
+      });
     });
 
     it('should detect comma at start of line in flow map', () => {
@@ -148,12 +155,9 @@ describe('commas', () => {
       'indentation: disable';
 
     it('should detect comma at start of line in flow seq with indentation disabled', () => {
-      check(
-        '---\n' + 'flow-seq: [1, 2, 3\n' + '         , 4, 5, 6]\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 9] }
-      );
+      check('---\n' + 'flow-seq: [1, 2, 3\n' + '         , 4, 5, 6]\n' + '...\n', conf, RULE_ID, {
+        problem1: [3, 9],
+      });
     });
 
     it('should detect comma at start of line in flow map with indentation disabled', () => {
@@ -261,21 +265,13 @@ describe('commas', () => {
     });
 
     it('should allow single space after comma in dict', () => {
-      check(
-        '---\n' + 'dict: {a: b , c: "1 2 3", d: e, f: [g, h]}\n' + '...\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('---\n' + 'dict: {a: b , c: "1 2 3", d: e, f: [g, h]}\n' + '...\n', conf, RULE_ID, {});
     });
 
     it('should detect double space after comma in dict', () => {
-      check(
-        '---\n' + 'dict: {a: b , c: "1 2 3",  d: e, f: [g, h]}\n' + '...\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 27] }
-      );
+      check('---\n' + 'dict: {a: b , c: "1 2 3",  d: e, f: [g, h]}\n' + '...\n', conf, RULE_ID, {
+        problem1: [2, 27],
+      });
     });
 
     it('should detect multiple spaces after commas in dict', () => {

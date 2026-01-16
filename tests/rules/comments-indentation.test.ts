@@ -101,11 +101,7 @@ describe('comments-indentation', () => {
 
     it('should allow comment before disabled line', () => {
       check(
-        '---\n' +
-          'obj1:\n' +
-          '  a: 1\n' +
-          '  # the following line is disabled\n' +
-          '  # b: 2\n',
+        '---\n' + 'obj1:\n' + '  a: 1\n' + '  # the following line is disabled\n' + '  # b: 2\n',
         conf,
         RULE_ID,
         {}

@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 import { spacesAfter, spacesBefore } from './common.js';
 

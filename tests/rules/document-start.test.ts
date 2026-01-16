@@ -150,13 +150,7 @@ describe('document-start', () => {
 
     it('should allow directives between documents', () => {
       check(
-        '---\n' +
-          'doc: 1\n' +
-          '...\n' +
-          '%YAML 1.2\n' +
-          '---\n' +
-          'doc: 2\n' +
-          '...\n',
+        '---\n' + 'doc: 1\n' + '...\n' + '%YAML 1.2\n' + '---\n' + 'doc: 2\n' + '...\n',
         conf,
         RULE_ID,
         {}

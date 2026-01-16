@@ -6,20 +6,13 @@ const RULE_ID = 'empty-values';
 describe('empty-values', () => {
   describe('disabled', () => {
     it('should allow empty values when disabled', () => {
-      const conf =
-        'empty-values: disable\n' +
-        'braces: disable\n' +
-        'commas: disable\n';
+      const conf = 'empty-values: disable\n' + 'braces: disable\n' + 'commas: disable\n';
       check('---\n' + 'foo:\n', conf, RULE_ID);
       check('---\n' + 'foo:\n' + ' bar:\n', conf, RULE_ID);
       check('---\n' + '{a:}\n', conf, RULE_ID);
       check('---\n' + 'foo: {a:}\n', conf, RULE_ID);
       check(
-        '---\n' +
-          '- {a:}\n' +
-          '- {a:, b: 2}\n' +
-          '- {a: 1, b:}\n' +
-          '- {a: 1, b: , }\n',
+        '---\n' + '- {a:}\n' + '- {a:, b: 2}\n' + '- {a: 1, b:}\n' + '- {a: 1, b: , }\n',
         conf,
         RULE_ID
       );
@@ -307,12 +300,9 @@ describe('empty-values', () => {
       check('---\n' + 'foo:\n' + '  - a: 1\n' + '  - b: 2\n' + '  -\n', conf, RULE_ID, {
         problem1: [5, 4],
       });
-      check(
-        '---\n' + 'foo:\n' + '  - - a\n' + '    - b: 2\n' + '    -\n',
-        conf,
-        RULE_ID,
-        { problem1: [5, 6] }
-      );
+      check('---\n' + 'foo:\n' + '  - - a\n' + '    - b: 2\n' + '    -\n', conf, RULE_ID, {
+        problem1: [5, 6],
+      });
       check('---\n' + 'foo:\n' + '  - - a\n' + '    - b: 2\n' + '  -\n', conf, RULE_ID, {
         problem1: [5, 4],
       });

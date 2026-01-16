@@ -36,8 +36,12 @@ function isUnquotedScalar(token: TokenWithMarks): boolean {
   }
   const value = token.value ?? '';
   // Plain scalars don't start with quotes or literal/folded indicators
-  if (value.startsWith("'") || value.startsWith('"') ||
-      value.startsWith('|') || value.startsWith('>')) {
+  if (
+    value.startsWith("'") ||
+    value.startsWith('"') ||
+    value.startsWith('|') ||
+    value.startsWith('>')
+  ) {
     return false;
   }
   return true;
@@ -82,11 +86,7 @@ export function* check(
 
   if (conf['forbid-explicit-octal']) {
     // Explicit octal: starts with 0o followed by octal digits
-    if (
-      val.length > 2 &&
-      val.slice(0, 2) === '0o' &&
-      IS_OCTAL_NUMBER_PATTERN.test(val.slice(2))
-    ) {
+    if (val.length > 2 && val.slice(0, 2) === '0o' && IS_OCTAL_NUMBER_PATTERN.test(val.slice(2))) {
       yield new LintProblem(
         token.startMark.line + 1,
         token.endMark.column + 1,

@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 
 export const ID = 'anchors';
@@ -133,11 +139,7 @@ export function* check(
     ) {
       for (const [anchor, info] of Object.entries(anchors)) {
         if (!info.used) {
-          yield new LintProblem(
-            info.line + 1,
-            info.column + 1,
-            `found unused anchor "${anchor}"`
-          );
+          yield new LintProblem(info.line + 1, info.column + 1, `found unused anchor "${anchor}"`);
         }
       }
     } else if (token.type === TokenType.Alias) {

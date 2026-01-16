@@ -7,16 +7,7 @@ describe('float-values', () => {
   describe('disabled', () => {
     it('should allow all float values when disabled', () => {
       const conf = 'float-values: disable';
-      check(
-        '---\n' +
-          '- 0.0\n' +
-          '- .NaN\n' +
-          '- .INF\n' +
-          '- .1\n' +
-          '- 10e-6\n',
-        conf,
-        RULE_ID
-      );
+      check('---\n' + '- 0.0\n' + '- .NaN\n' + '- .INF\n' + '- .1\n' + '- 10e-6\n', conf, RULE_ID);
     });
   });
 

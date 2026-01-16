@@ -45,11 +45,7 @@ export function* check(
       token.type === TokenType.StreamEnd;
 
     if (prevIsStreamStartOrDocEnd && !tokenIsDocStartOrDirectiveOrStreamEnd) {
-      yield new LintProblem(
-        token.startMark.line + 1,
-        1,
-        'missing document start "---"'
-      );
+      yield new LintProblem(token.startMark.line + 1, 1, 'missing document start "---"');
     }
   } else {
     // Document start is forbidden

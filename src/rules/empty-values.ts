@@ -72,10 +72,7 @@ export function* check(
           token.endMark.column + 1,
           'empty value in flow mapping'
         );
-      } else if (
-        next?.type === TokenType.BlockEnd &&
-        nextnext?.type === TokenType.FlowMappingEnd
-      ) {
+      } else if (next?.type === TokenType.BlockEnd && nextnext?.type === TokenType.FlowMappingEnd) {
         // Multi-line flow mapping: BlockEnd followed by FlowMappingEnd indicates empty value
         yield new LintProblem(
           token.startMark.line + 1,

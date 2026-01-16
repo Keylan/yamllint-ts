@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 import { spacesAfter, spacesBefore } from './common.js';
 
@@ -92,10 +98,7 @@ export function* check(
       token.endMark.column + 1,
       'forbidden flow mapping'
     );
-  } else if (
-    token.type === TokenType.FlowMappingStart &&
-    isEmptyFlowMapping(next, nextnext)
-  ) {
+  } else if (token.type === TokenType.FlowMappingStart && isEmptyFlowMapping(next, nextnext)) {
     // Empty braces - find the actual FlowMappingEnd token for spacing check
     const endToken = next?.type === TokenType.FlowMappingEnd ? next : nextnext;
     const problem = spacesAfter(token, prev, endToken, {
@@ -113,10 +116,7 @@ export function* check(
       maxDesc: 'too many spaces inside braces',
     });
     if (problem) yield problem;
-  } else if (
-    token.type === TokenType.FlowMappingEnd &&
-    prev?.type !== TokenType.FlowMappingStart
-  ) {
+  } else if (token.type === TokenType.FlowMappingEnd && prev?.type !== TokenType.FlowMappingStart) {
     const problem = spacesBefore(token, prev, next, {
       min: minSpacesInside,
       max: maxSpacesInside,

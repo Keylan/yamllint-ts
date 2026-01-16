@@ -49,8 +49,12 @@ function isUnquotedScalar(token: TokenWithMarks): boolean {
   }
   const value = token.value ?? '';
   // Plain scalars don't start with quotes or literal/folded indicators
-  if (value.startsWith("'") || value.startsWith('"') ||
-      value.startsWith('|') || value.startsWith('>')) {
+  if (
+    value.startsWith("'") ||
+    value.startsWith('"') ||
+    value.startsWith('|') ||
+    value.startsWith('>')
+  ) {
     return false;
   }
   return true;

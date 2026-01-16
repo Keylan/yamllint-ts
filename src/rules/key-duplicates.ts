@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 
 export const ID = 'key-duplicates';
@@ -92,10 +98,7 @@ export function* check(
   const stack = context.stack;
 
   // Track mapping and sequence starts
-  if (
-    token.type === TokenType.BlockMappingStart ||
-    token.type === TokenType.FlowMappingStart
-  ) {
+  if (token.type === TokenType.BlockMappingStart || token.type === TokenType.FlowMappingStart) {
     stack.push({ type: MAP, keys: [] });
   } else if (
     token.type === TokenType.BlockSequenceStart ||
@@ -119,9 +122,9 @@ export function* check(
     // Patterns to handle:
     // 1. KeyToken + ScalarToken (normal key)
     // 2. KeyToken("?") + KeyToken + ScalarToken (explicit key with block scalar)
-    
+
     let keyScalar: TokenWithMarks | null = null;
-    
+
     if (next?.type === TokenType.Scalar) {
       // Normal key: KeyToken + ScalarToken
       keyScalar = next;
@@ -130,7 +133,7 @@ export function* check(
       // Skip this first KeyToken("?") - we'll handle it when we see the second KeyToken
       return;
     }
-    
+
     if (keyScalar && stack.length > 0 && stack[stack.length - 1]!.type === MAP) {
       const parent = stack[stack.length - 1]!;
       const keyValue = normalizeKeyValue(keyScalar.value);

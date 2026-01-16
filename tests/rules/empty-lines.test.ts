@@ -12,9 +12,7 @@ const RULE_ID = 'empty-lines';
 describe('empty-lines', () => {
   describe('disabled', () => {
     const conf =
-      'empty-lines: disable\n' +
-      'new-line-at-end-of-file: disable\n' +
-      'document-start: disable';
+      'empty-lines: disable\n' + 'new-line-at-end-of-file: disable\n' + 'document-start: disable';
 
     it('should allow empty string', () => {
       check('', conf, RULE_ID, {});
@@ -62,8 +60,7 @@ describe('empty-lines', () => {
 
   describe('0 empty lines', () => {
     const conf =
-      'empty-lines: {max: 0, max-start: 0, max-end: 0}\n' +
-      'new-line-at-end-of-file: disable';
+      'empty-lines: {max: 0, max-start: 0, max-end: 0}\n' + 'new-line-at-end-of-file: disable';
 
     it('should allow document start only', () => {
       check('---\n', conf, RULE_ID, {});
@@ -93,9 +90,7 @@ describe('empty-lines', () => {
   });
 
   describe('spaces', () => {
-    const conf =
-      'empty-lines: {max: 1, max-start: 0, max-end: 0}\n' +
-      'trailing-spaces: disable';
+    const conf = 'empty-lines: {max: 1, max-start: 0, max-end: 0}\n' + 'trailing-spaces: disable';
 
     it('should allow line with only space as non-empty', () => {
       check('---\nintro\n\n \n\nconclusion\n', conf, RULE_ID, {});
@@ -110,60 +105,44 @@ describe('empty-lines', () => {
 
   describe('empty lines at start', () => {
     it('should allow 4 empty lines at start when max-start is 4', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 4, max-end: 0}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 4, max-end: 0}\n' + 'document-start: disable';
       check('\n\n\n\nnon empty\n', conf, RULE_ID, {});
     });
 
     it('should detect 5 empty lines at start when max-start is 4', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 4, max-end: 0}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 4, max-end: 0}\n' + 'document-start: disable';
       check('\n\n\n\n\nnon empty\n', conf, RULE_ID, { problem1: [5, 1] });
     });
 
     it('should allow no empty lines at start when max-start is 0', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' + 'document-start: disable';
       check('non empty\n', conf, RULE_ID, {});
     });
 
     it('should detect 1 empty line at start when max-start is 0', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' + 'document-start: disable';
       check('\nnon empty\n', conf, RULE_ID, { problem1: [1, 1] });
     });
   });
 
   describe('empty lines at end', () => {
     it('should allow 4 empty lines at end when max-end is 4', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 0, max-end: 4}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 0, max-end: 4}\n' + 'document-start: disable';
       check('non empty\n\n\n\n\n', conf, RULE_ID, {});
     });
 
     it('should detect 5 empty lines at end when max-end is 4', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 0, max-end: 4}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 0, max-end: 4}\n' + 'document-start: disable';
       check('non empty\n\n\n\n\n\n', conf, RULE_ID, { problem1: [6, 1] });
     });
 
     it('should allow no empty lines at end when max-end is 0', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' + 'document-start: disable';
       check('non empty\n', conf, RULE_ID, {});
     });
 
     it('should detect 1 empty line at end when max-end is 0', () => {
-      const conf =
-        'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' +
-        'document-start: disable';
+      const conf = 'empty-lines: {max: 2, max-start: 0, max-end: 0}\n' + 'document-start: disable';
       check('non empty\n\n', conf, RULE_ID, { problem1: [2, 1] });
     });
   });

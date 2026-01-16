@@ -8,20 +8,26 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 
 export const ID = 'indentation';
 export const TYPE = 'token' as const;
 
 export const CONF = {
-  'spaces': [Number, 'consistent'],
+  spaces: [Number, 'consistent'],
   'indent-sequences': [true, false, 'whatever', 'consistent'],
   'check-multi-line-strings': Boolean,
 };
 
 export const DEFAULT = {
-  'spaces': 'consistent',
+  spaces: 'consistent',
   'indent-sequences': true,
   'check-multi-line-strings': false,
 };
@@ -32,7 +38,7 @@ export const DEFAULT = {
 
 /** Typed configuration for the indentation rule */
 export interface IndentationConfig extends BaseRuleConfig {
-  'spaces': number | 'consistent';
+  spaces: number | 'consistent';
   'indent-sequences': boolean | 'whatever' | 'consistent';
   'check-multi-line-strings': boolean;
 }
@@ -128,7 +134,7 @@ function* checkScalarIndentation(
     // Block scalar (| or >)
     else if (style === 'block') {
       const topType = stack[stack.length - 1]?.type;
-      
+
       if (topType === B_ENT) {
         // - >
         //     multi
@@ -230,8 +236,12 @@ export function* check(
   const stack = context.stack;
 
   if (DEBUG) {
-    console.log(`\n=== ${token.type} (${token.startMark.line+1}:${token.startMark.column+1}) value=${JSON.stringify(token.value)} ===`);
-    console.log(`Stack: [${stack.map(p => labels[p.type] + '(' + p.indent + (p.explicitKey ? ',exp' : '') + ')').join(', ')}]`);
+    console.log(
+      `\n=== ${token.type} (${token.startMark.line + 1}:${token.startMark.column + 1}) value=${JSON.stringify(token.value)} ===`
+    );
+    console.log(
+      `Stack: [${stack.map((p) => labels[p.type] + '(' + p.indent + (p.explicitKey ? ',exp' : '') + ')').join(', ')}]`
+    );
     if (prev) console.log(`prev: ${prev.type} value=${JSON.stringify(prev.value)}`);
   }
 
@@ -252,26 +262,24 @@ export function* check(
     token.type !== TokenType.BlockEnd &&
     !(token.type === TokenType.Scalar && (token.value ?? '') === '');
 
-  const firstInLine =
-    isVisible && token.startMark.line + 1 > context.cur_line;
+  const firstInLine = isVisible && token.startMark.line + 1 > context.cur_line;
 
   if (firstInLine) {
     const foundIndentation = token.startMark.column;
     let expected = stack[stack.length - 1]!.indent;
-    
+
     // For BlockEntry tokens in a B_SEQ context, use expectedIndent if the sequence
     // was incorrectly positioned (to flag all items, not just the first)
-    if (token.type === TokenType.BlockEntry && 
-        stack[stack.length - 1]!.type === B_SEQ &&
-        stack[stack.length - 1]!.expectedIndent !== undefined &&
-        stack[stack.length - 1]!.expectedIndent !== stack[stack.length - 1]!.indent) {
+    if (
+      token.type === TokenType.BlockEntry &&
+      stack[stack.length - 1]!.type === B_SEQ &&
+      stack[stack.length - 1]!.expectedIndent !== undefined &&
+      stack[stack.length - 1]!.expectedIndent !== stack[stack.length - 1]!.indent
+    ) {
       expected = stack[stack.length - 1]!.expectedIndent!;
     }
 
-    if (
-      token.type === TokenType.FlowMappingEnd ||
-      token.type === TokenType.FlowSequenceEnd
-    ) {
+    if (token.type === TokenType.FlowMappingEnd || token.type === TokenType.FlowSequenceEnd) {
       expected = stack[stack.length - 1]!.lineIndent ?? expected;
     } else if (
       stack[stack.length - 1]!.type === KEY &&
@@ -281,7 +289,8 @@ export function* check(
       expected = detectIndent(expected, token);
     } else if (
       // Handle explicit key marker (?) - next tokens are indented under the key
-      prev?.type === TokenType.Key && prev?.value === '?' &&
+      prev?.type === TokenType.Key &&
+      prev?.value === '?' &&
       token.type !== TokenType.Value
     ) {
       expected = detectIndent(expected, token);
@@ -365,7 +374,7 @@ export function* check(
     // Our parser generates TWO KeyTokens for explicit keys:
     // 1. KeyToken "?" - the explicit key marker
     // 2. KeyToken "" - spurious token for content position (not in Python)
-    // 
+    //
     // We push KEY when we see the marker "?" with current parent's indent.
     // We skip the spurious empty KeyToken that follows the "?" marker.
     if (token.value === '?') {
@@ -379,13 +388,16 @@ export function* check(
       // 1. Previous token was KeyToken "?" (immediately following explicit marker)
       // 2. We're inside an explicit KEY and inside a B_SEQ (spurious key in sequence)
       const immediatelyAfterExplicitMarker = prev?.type === TokenType.Key && prev?.value === '?';
-      const insideExplicitKeySequence = 
-        stack[stack.length - 1]!.type === B_SEQ && 
+      const insideExplicitKeySequence =
+        stack[stack.length - 1]!.type === B_SEQ &&
         stack.length >= 2 &&
         stack[stack.length - 2]!.type === KEY &&
         stack[stack.length - 2]!.explicitKey;
-      
-      if (DEBUG) console.log(`  KeyToken: afterMarker=${immediatelyAfterExplicitMarker}, inExpSeq=${insideExplicitKeySequence}`);
+
+      if (DEBUG)
+        console.log(
+          `  KeyToken: afterMarker=${immediatelyAfterExplicitMarker}, inExpSeq=${insideExplicitKeySequence}`
+        );
       if (!immediatelyAfterExplicitMarker && !insideExplicitKeySequence) {
         const indent = stack[stack.length - 1]!.indent;
         if (DEBUG) console.log(`  Pushing KEY(${indent})`);

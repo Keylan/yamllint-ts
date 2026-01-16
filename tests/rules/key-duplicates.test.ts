@@ -8,11 +8,7 @@ describe('key-duplicates', () => {
     it('should allow duplicate keys in block mapping when disabled', () => {
       const conf = 'key-duplicates: disable';
       check(
-        '---\n' +
-          'block mapping:\n' +
-          '  key: a\n' +
-          '  otherkey: b\n' +
-          '  key: c\n',
+        '---\n' + 'block mapping:\n' + '  key: a\n' + '  otherkey: b\n' + '  key: c\n',
         conf,
         RULE_ID
       );
@@ -20,13 +16,7 @@ describe('key-duplicates', () => {
 
     it('should allow duplicate keys in flow mapping when disabled', () => {
       const conf = 'key-duplicates: disable';
-      check(
-        '---\n' +
-          'flow mapping:\n' +
-          '  {key: a, otherkey: b, key: c}\n',
-        conf,
-        RULE_ID
-      );
+      check('---\n' + 'flow mapping:\n' + '  {key: a, otherkey: b, key: c}\n', conf, RULE_ID);
     });
 
     it('should allow duplicated twice in block mapping when disabled', () => {
@@ -45,13 +35,7 @@ describe('key-duplicates', () => {
 
     it('should allow duplicated twice in flow mapping when disabled', () => {
       const conf = 'key-duplicates: disable';
-      check(
-        '---\n' +
-          'duplicated twice:\n' +
-          '  - {k: a, ok: b, k: c, k: d}\n',
-        conf,
-        RULE_ID
-      );
+      check('---\n' + 'duplicated twice:\n' + '  - {k: a, ok: b, k: c, k: d}\n', conf, RULE_ID);
     });
 
     it('should allow multiple duplicates in block mapping when disabled', () => {
@@ -73,9 +57,7 @@ describe('key-duplicates', () => {
     it('should allow multiple duplicates in flow mapping when disabled', () => {
       const conf = 'key-duplicates: disable';
       check(
-        '---\n' +
-          'multiple duplicates:\n' +
-          '  {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}\n',
+        '---\n' + 'multiple duplicates:\n' + '  {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}\n',
         conf,
         RULE_ID
       );
@@ -83,14 +65,7 @@ describe('key-duplicates', () => {
 
     it('should allow duplicates at root when disabled', () => {
       const conf = 'key-duplicates: disable';
-      check(
-        '---\n' +
-          'at: root\n' +
-          'multiple: times\n' +
-          'at: root\n',
-        conf,
-        RULE_ID
-      );
+      check('---\n' + 'at: root\n' + 'multiple: times\n' + 'at: root\n', conf, RULE_ID);
     });
 
     it('should allow nested but OK when disabled', () => {
@@ -160,24 +135,12 @@ describe('key-duplicates', () => {
 
     it('should report syntax error for extra closing brace when disabled', () => {
       const conf = 'key-duplicates: disable';
-      check(
-        '---\n' +
-          '{a: 1, b: 2}}\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 13, 'syntax'] }
-      );
+      check('---\n' + '{a: 1, b: 2}}\n', conf, RULE_ID, { problem1: [2, 13, 'syntax'] });
     });
 
     it('should report syntax error for extra closing bracket when disabled', () => {
       const conf = 'key-duplicates: disable';
-      check(
-        '---\n' +
-          '[a, b, c]]\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 10, 'syntax'] }
-      );
+      check('---\n' + '[a, b, c]]\n', conf, RULE_ID, { problem1: [2, 10, 'syntax'] });
     });
   });
 
@@ -185,11 +148,7 @@ describe('key-duplicates', () => {
     it('should detect duplicate keys in block mapping', () => {
       const conf = 'key-duplicates: enable';
       check(
-        '---\n' +
-          'block mapping:\n' +
-          '  key: a\n' +
-          '  otherkey: b\n' +
-          '  key: c\n',
+        '---\n' + 'block mapping:\n' + '  key: a\n' + '  otherkey: b\n' + '  key: c\n',
         conf,
         RULE_ID,
         { problem1: [5, 3] }
@@ -198,14 +157,9 @@ describe('key-duplicates', () => {
 
     it('should detect duplicate keys in flow mapping', () => {
       const conf = 'key-duplicates: enable';
-      check(
-        '---\n' +
-          'flow mapping:\n' +
-          '  {key: a, otherkey: b, key: c}\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 25] }
-      );
+      check('---\n' + 'flow mapping:\n' + '  {key: a, otherkey: b, key: c}\n', conf, RULE_ID, {
+        problem1: [3, 25],
+      });
     });
 
     it('should detect duplicated twice in block mapping', () => {
@@ -225,14 +179,10 @@ describe('key-duplicates', () => {
 
     it('should detect duplicated twice in flow mapping', () => {
       const conf = 'key-duplicates: enable';
-      check(
-        '---\n' +
-          'duplicated twice:\n' +
-          '  - {k: a, ok: b, k: c, k: d}\n',
-        conf,
-        RULE_ID,
-        { problem1: [3, 19], problem2: [3, 25] }
-      );
+      check('---\n' + 'duplicated twice:\n' + '  - {k: a, ok: b, k: c, k: d}\n', conf, RULE_ID, {
+        problem1: [3, 19],
+        problem2: [3, 25],
+      });
     });
 
     it('should detect multiple duplicates in block mapping', () => {
@@ -255,9 +205,7 @@ describe('key-duplicates', () => {
     it('should detect multiple duplicates in flow mapping', () => {
       const conf = 'key-duplicates: enable';
       check(
-        '---\n' +
-          'multiple duplicates:\n' +
-          '  {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}\n',
+        '---\n' + 'multiple duplicates:\n' + '  {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}\n',
         conf,
         RULE_ID,
         { problem1: [3, 28], problem2: [3, 34] }
@@ -266,15 +214,9 @@ describe('key-duplicates', () => {
 
     it('should detect duplicates at root', () => {
       const conf = 'key-duplicates: enable';
-      check(
-        '---\n' +
-          'at: root\n' +
-          'multiple: times\n' +
-          'at: root\n',
-        conf,
-        RULE_ID,
-        { problem1: [4, 1] }
-      );
+      check('---\n' + 'at: root\n' + 'multiple: times\n' + 'at: root\n', conf, RULE_ID, {
+        problem1: [4, 1],
+      });
     });
 
     it('should allow nested but OK', () => {
@@ -346,24 +288,12 @@ describe('key-duplicates', () => {
 
     it('should report syntax error for extra closing brace when enabled', () => {
       const conf = 'key-duplicates: enable';
-      check(
-        '---\n' +
-          '{a: 1, b: 2}}\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 13, 'syntax'] }
-      );
+      check('---\n' + '{a: 1, b: 2}}\n', conf, RULE_ID, { problem1: [2, 13, 'syntax'] });
     });
 
     it('should report syntax error for extra closing bracket when enabled', () => {
       const conf = 'key-duplicates: enable';
-      check(
-        '---\n' +
-          '[a, b, c]]\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 10, 'syntax'] }
-      );
+      check('---\n' + '[a, b, c]]\n', conf, RULE_ID, { problem1: [2, 10, 'syntax'] });
     });
   });
 
@@ -371,10 +301,7 @@ describe('key-duplicates', () => {
     it('should allow key tokens in flow sequences', () => {
       const conf = 'key-duplicates: enable';
       check(
-        '---\n' +
-          '[\n' +
-          '  flow: sequence, with, key: value, mappings\n' +
-          ']\n',
+        '---\n' + '[\n' + '  flow: sequence, with, key: value, mappings\n' + ']\n',
         conf,
         RULE_ID
       );
@@ -473,14 +400,7 @@ describe('key-duplicates', () => {
 
     it('should allow no merge keys', () => {
       const conf = 'key-duplicates: {forbid-duplicated-merge-keys: true}';
-      check(
-        '---\n' +
-          'No Merge Keys:\n' +
-          '  key: a\n' +
-          '  otherkey: b\n',
-        conf,
-        RULE_ID
-      );
+      check('---\n' + 'No Merge Keys:\n' + '  key: a\n' + '  otherkey: b\n', conf, RULE_ID);
     });
   });
 });

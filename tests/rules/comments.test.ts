@@ -11,9 +11,7 @@ const RULE_ID = 'comments';
 
 describe('comments', () => {
   describe('disabled', () => {
-    const conf =
-      'comments: disable\n' +
-      'comments-indentation: disable';
+    const conf = 'comments: disable\n' + 'comments-indentation: disable';
 
     it('should allow any comment format when disabled', () => {
       check(
@@ -110,30 +108,16 @@ describe('comments', () => {
       'document-start: disable';
 
     it('should detect shebang as missing starting space', () => {
-      check(
-        '#!/bin/env my-interpreter\n',
-        conf,
-        RULE_ID,
-        { problem1: [1, 2] }
-      );
+      check('#!/bin/env my-interpreter\n', conf, RULE_ID, { problem1: [1, 2] });
     });
 
     it('should detect shebang on second line as missing starting space', () => {
-      check(
-        '# comment\n' +
-          '#!/bin/env my-interpreter\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 2] }
-      );
+      check('# comment\n' + '#!/bin/env my-interpreter\n', conf, RULE_ID, { problem1: [2, 2] });
     });
 
     it('should detect shebang and other comments missing starting space', () => {
       check(
-        '#!/bin/env my-interpreter\n' +
-          '---\n' +
-          '#comment\n' +
-          '#!/bin/env my-interpreter\n',
+        '#!/bin/env my-interpreter\n' + '---\n' + '#comment\n' + '#!/bin/env my-interpreter\n',
         conf,
         RULE_ID,
         {
@@ -145,21 +129,11 @@ describe('comments', () => {
     });
 
     it('should detect #! as missing starting space', () => {
-      check(
-        '#! is a valid shebang too\n',
-        conf,
-        RULE_ID,
-        { problem1: [1, 2] }
-      );
+      check('#! is a valid shebang too\n', conf, RULE_ID, { problem1: [1, 2] });
     });
 
     it('should detect inline shebang-like comment as missing starting space', () => {
-      check(
-        'key:  #!/not/a/shebang\n',
-        conf,
-        RULE_ID,
-        { problem1: [1, 8] }
-      );
+      check('key:  #!/not/a/shebang\n', conf, RULE_ID, { problem1: [1, 8] });
     });
   });
 
@@ -172,30 +146,16 @@ describe('comments', () => {
       'document-start: disable';
 
     it('should ignore shebang on first line', () => {
-      check(
-        '#!/bin/env my-interpreter\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('#!/bin/env my-interpreter\n', conf, RULE_ID, {});
     });
 
     it('should detect shebang on second line as missing starting space', () => {
-      check(
-        '# comment\n' +
-          '#!/bin/env my-interpreter\n',
-        conf,
-        RULE_ID,
-        { problem1: [2, 2] }
-      );
+      check('# comment\n' + '#!/bin/env my-interpreter\n', conf, RULE_ID, { problem1: [2, 2] });
     });
 
     it('should ignore first line shebang but detect other comments', () => {
       check(
-        '#!/bin/env my-interpreter\n' +
-          '---\n' +
-          '#comment\n' +
-          '#!/bin/env my-interpreter\n',
+        '#!/bin/env my-interpreter\n' + '---\n' + '#comment\n' + '#!/bin/env my-interpreter\n',
         conf,
         RULE_ID,
         {
@@ -206,29 +166,17 @@ describe('comments', () => {
     });
 
     it('should ignore #! on first line', () => {
-      check(
-        '#! is a valid shebang too\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('#! is a valid shebang too\n', conf, RULE_ID, {});
     });
 
     it('should detect inline shebang-like comment as missing starting space', () => {
-      check(
-        'key:  #!/not/a/shebang\n',
-        conf,
-        RULE_ID,
-        { problem1: [1, 8] }
-      );
+      check('key:  #!/not/a/shebang\n', conf, RULE_ID, { problem1: [1, 8] });
     });
   });
 
   describe('spaces from content', () => {
     const conf =
-      'comments:\n' +
-      '  require-starting-space: false\n' +
-      '  min-spaces-from-content: 2';
+      'comments:\n' + '  require-starting-space: false\n' + '  min-spaces-from-content: 2';
 
     it('should allow correct spacing from content', () => {
       check(
@@ -311,16 +259,11 @@ describe('comments', () => {
 
   describe('empty comment', () => {
     const conf =
-      'comments:\n' +
-      '  require-starting-space: true\n' +
-      '  min-spaces-from-content: 2';
+      'comments:\n' + '  require-starting-space: true\n' + '  min-spaces-from-content: 2';
 
     it('should allow empty comments in paragraphs', () => {
       check(
-        '---\n' +
-          '# This is paragraph 1.\n' +
-          '#\n' +
-          '# This is paragraph 2.\n',
+        '---\n' + '# This is paragraph 1.\n' + '#\n' + '# This is paragraph 2.\n',
         conf,
         RULE_ID,
         {}
@@ -328,14 +271,7 @@ describe('comments', () => {
     });
 
     it('should allow inline empty comment', () => {
-      check(
-        '---\n' +
-          'inline: comment  #\n' +
-          'foo: bar\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('---\n' + 'inline: comment  #\n' + 'foo: bar\n', conf, RULE_ID, {});
     });
   });
 
@@ -349,10 +285,7 @@ describe('comments', () => {
 
     it('should allow empty comments with CRLF newlines', () => {
       check(
-        '---\r\n' +
-          '# This is paragraph 1.\r\n' +
-          '#\r\n' +
-          '# This is paragraph 2.\r\n',
+        '---\r\n' + '# This is paragraph 1.\r\n' + '#\r\n' + '# This is paragraph 2.\r\n',
         conf,
         RULE_ID,
         {}
@@ -369,10 +302,7 @@ describe('comments', () => {
 
     it('should allow empty comments with CRLF newlines when new-lines disabled', () => {
       check(
-        '---\r\n' +
-          '# This is paragraph 1.\r\n' +
-          '#\r\n' +
-          '# This is paragraph 2.\r\n',
+        '---\r\n' + '# This is paragraph 1.\r\n' + '#\r\n' + '# This is paragraph 2.\r\n',
         conf,
         RULE_ID,
         {}
@@ -382,17 +312,10 @@ describe('comments', () => {
 
   describe('first line', () => {
     const conf =
-      'comments:\n' +
-      '  require-starting-space: true\n' +
-      '  min-spaces-from-content: 2';
+      'comments:\n' + '  require-starting-space: true\n' + '  min-spaces-from-content: 2';
 
     it('should allow comment on first line', () => {
-      check(
-        '# comment\n',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('# comment\n', conf, RULE_ID, {});
     });
   });
 
@@ -404,13 +327,7 @@ describe('comments', () => {
       'new-line-at-end-of-file: disable';
 
     it('should allow comment on last line without trailing newline', () => {
-      check(
-        '# comment with no newline char:\n' +
-          '#',
-        conf,
-        RULE_ID,
-        {}
-      );
+      check('# comment with no newline char:\n' + '#', conf, RULE_ID, {});
     });
   });
 
@@ -424,11 +341,7 @@ describe('comments', () => {
 
     it('should allow comment after multi-line scalar', () => {
       check(
-        '---\n' +
-          'string: >\n' +
-          '  this is plain text\n' +
-          '\n' +
-          '# comment\n',
+        '---\n' + 'string: >\n' + '  this is plain text\n' + '\n' + '# comment\n',
         conf,
         RULE_ID,
         {}
@@ -437,11 +350,7 @@ describe('comments', () => {
 
     it('should allow comment after multi-line scalar in list', () => {
       check(
-        '---\n' +
-          '- string: >\n' +
-          '    this is plain text\n' +
-          '  \n' +
-          '  # comment\n',
+        '---\n' + '- string: >\n' + '    this is plain text\n' + '  \n' + '  # comment\n',
         conf,
         RULE_ID,
         {}

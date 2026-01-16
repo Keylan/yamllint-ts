@@ -8,7 +8,13 @@
  * Licensed under GPL-3.0
  */
 
-import { LintProblem, type TokenRule, type BaseRuleConfig, type BaseRuleContext, type TokenWithMarks } from '../types.js';
+import {
+  LintProblem,
+  type TokenRule,
+  type BaseRuleConfig,
+  type BaseRuleContext,
+  type TokenWithMarks,
+} from '../types.js';
 import { TokenType } from '../parser.js';
 
 export const ID = 'truthy';
@@ -16,19 +22,28 @@ export const TYPE = 'token' as const;
 
 // All possible truthy values in YAML 1.1
 const TRUTHY_1_1 = [
-  'YES', 'Yes', 'yes',
-  'NO', 'No', 'no',
-  'TRUE', 'True', 'true',
-  'FALSE', 'False', 'false',
-  'ON', 'On', 'on',
-  'OFF', 'Off', 'off',
+  'YES',
+  'Yes',
+  'yes',
+  'NO',
+  'No',
+  'no',
+  'TRUE',
+  'True',
+  'true',
+  'FALSE',
+  'False',
+  'false',
+  'ON',
+  'On',
+  'on',
+  'OFF',
+  'Off',
+  'off',
 ];
 
 // Truthy values in YAML 1.2 (more restrictive)
-const TRUTHY_1_2 = [
-  'TRUE', 'True', 'true',
-  'FALSE', 'False', 'false',
-];
+const TRUTHY_1_2 = ['TRUE', 'True', 'true', 'FALSE', 'False', 'false'];
 
 export const CONF = {
   'allowed-values': [...TRUTHY_1_1],
@@ -77,8 +92,12 @@ function isUnquotedScalar(token: TokenWithMarks): boolean {
   }
   const value = token.value ?? '';
   // Plain scalars don't start with quotes or literal/folded indicators
-  if (value.startsWith("'") || value.startsWith('"') ||
-      value.startsWith('|') || value.startsWith('>')) {
+  if (
+    value.startsWith("'") ||
+    value.startsWith('"') ||
+    value.startsWith('|') ||
+    value.startsWith('>')
+  ) {
     return false;
   }
   return true;
@@ -136,7 +155,7 @@ export function* check(
     const baseValues = specVersion[0] === 1 && specVersion[1] === 2 ? TRUTHY_1_2 : TRUTHY_1_1;
     const allowedValues = conf['allowed-values'];
     const allowedSet = new Set(allowedValues);
-    context.bad_truthy_values = new Set(baseValues.filter(v => !allowedSet.has(v)));
+    context.bad_truthy_values = new Set(baseValues.filter((v) => !allowedSet.has(v)));
   }
 
   const badValues = context.bad_truthy_values;

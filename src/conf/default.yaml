@@ -11,7 +11,6 @@ rules:
   anchors: enable
   braces: enable
   brackets: enable
-    test:stuff
   colons: enable
   commas: enable
   comments:
