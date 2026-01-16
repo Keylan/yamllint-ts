@@ -1,0 +1,12 @@
+---
+# Relaxed yamllint-ts configuration
+# Matches Python yamllint's relaxed.yaml
+
+extends: default
+
+rules:
+  empty-lines:
+    level: warning
+  line-length:
+    level: warning
+    allow-non-breakable-inline-mappings: true
