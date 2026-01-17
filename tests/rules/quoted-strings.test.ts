@@ -1072,3 +1072,57 @@ describe('quoted keys', () => {
     );
   });
 });
+
+describe('quoted-strings edge cases', () => {
+  test('invalid regex in extra-required', () => {
+    // Invalid regex patterns should be caught and not cause crashes
+    const conf = 'quoted-strings:\n' + '  required: false\n' + '  extra-required: ["[invalid"]\n';
+    // The invalid regex should be caught and treated as non-matching
+    check('---\n' + 'foo: bar\n', conf, RULE_ID);
+  });
+
+  test('invalid regex in extra-allowed', () => {
+    // Invalid regex patterns should be caught and not cause crashes
+    const conf =
+      'quoted-strings:\n' + '  required: only-when-needed\n' + '  extra-allowed: ["[invalid"]\n';
+    check('---\n' + 'foo: "bar"\n', conf, RULE_ID, { problem1: [2, 6] });
+  });
+
+  test('consistent quote type', () => {
+    // Test consistent quote type detection
+    const conf = 'quoted-strings: {quote-type: consistent}';
+    // First quoted string sets the style
+    check('---\n' + 'a: "double"\n' + "b: 'single'\n", conf, RULE_ID, { problem1: [3, 4] });
+    check('---\n' + "a: 'single'\n" + 'b: "double"\n', conf, RULE_ID, { problem1: [3, 4] });
+  });
+
+  test('flow context detection', () => {
+    // Test flow context entry and exit
+    const conf = 'quoted-strings: {required: only-when-needed}';
+    // Inside flow context, commas and brackets require quotes
+    check('---\n' + 'a: {b: "c,d"}\n', conf, RULE_ID);
+    check('---\n' + 'a: [foo, "bar,baz"]\n', conf, RULE_ID);
+  });
+
+  test('tag handling', () => {
+    // Test that tags are tracked and properly cleared
+    const conf = 'quoted-strings: {required: true}';
+    // Custom tags (!tag) still require quotes - only explicit types (!!str) exempt the value
+    check('---\n' + 'a: !tag value\n', conf, RULE_ID, { problem1: [2, 9] });
+    // Explicit type tags (!!str, !!int, etc.) exempt the value from requiring quotes
+    check('---\n' + 'a: !!str value\n', conf, RULE_ID);
+  });
+
+  test('pending tag cleared on non-scalar', () => {
+    // Test that pending tag is cleared when non-scalar token is encountered
+    const conf = 'quoted-strings: {required: true}';
+    check('---\n' + '!tag\n' + '- item\n', conf, RULE_ID, { problem1: [3, 3] });
+  });
+
+  test('only-when-needed with extra-required unquoted', () => {
+    // Test extra-required with only-when-needed when value is unquoted
+    const conf =
+      'quoted-strings:\n' + '  required: only-when-needed\n' + '  extra-required: ["^http://"]\n';
+    check('---\n' + 'url: http://example.com\n', conf, RULE_ID, { problem1: [2, 6] });
+  });
+});

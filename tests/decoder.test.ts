@@ -46,7 +46,7 @@ function encodeUtf32BE(str: string): Buffer {
   const codePoints = [...str].map((c) => c.codePointAt(0)!);
   const buf = Buffer.alloc(codePoints.length * 4);
   for (let i = 0; i < codePoints.length; i++) {
-    const cp = codePoints[i];
+    const cp = codePoints[i]!;
     buf[i * 4] = (cp >> 24) & 0xff;
     buf[i * 4 + 1] = (cp >> 16) & 0xff;
     buf[i * 4 + 2] = (cp >> 8) & 0xff;
@@ -62,7 +62,7 @@ function encodeUtf32LE(str: string): Buffer {
   const codePoints = [...str].map((c) => c.codePointAt(0)!);
   const buf = Buffer.alloc(codePoints.length * 4);
   for (let i = 0; i < codePoints.length; i++) {
-    const cp = codePoints[i];
+    const cp = codePoints[i]!;
     buf[i * 4] = cp & 0xff;
     buf[i * 4 + 1] = (cp >> 8) & 0xff;
     buf[i * 4 + 2] = (cp >> 16) & 0xff;

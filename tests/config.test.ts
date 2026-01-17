@@ -152,7 +152,7 @@ describe('config', () => {
       const rule = getRule('indentation');
       const result = validateRuleConf(rule, 'enable');
       expect(result).not.toBe(false);
-      expect((result as object)['level']).toBe('error');
+      expect((result as Record<string, unknown>)['level']).toBe('error');
     });
 
     it('should return config for true', () => {
@@ -197,7 +197,7 @@ describe('config', () => {
 
     it('should throw for non-object config', () => {
       const rule = getRule('indentation');
-      expect(() => validateRuleConf(rule, 'invalid' as unknown as object)).toThrow(
+      expect(() => validateRuleConf(rule, 'invalid' as unknown as Record<string, unknown>)).toThrow(
         YamlLintConfigError
       );
     });

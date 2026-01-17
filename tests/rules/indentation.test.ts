@@ -288,3 +288,57 @@ describe('scalar indentation', () => {
     check('a key:\n' + '  multi\n' + '   line\n', conf, RULE_ID, { problem1: [3, 4] });
   });
 });
+
+describe('indentation edge cases', () => {
+  test('indent-sequences true with spaces consistent and sequence at same column', () => {
+    // This tests the case where indent-sequences: true, spaces: consistent,
+    // and the sequence starts at the same column as the parent (indent = -1 case)
+    const conf = 'indentation: {spaces: consistent, indent-sequences: true}';
+    // Sequence at same column as parent - triggers indent = -1 (unknown indentation)
+    check('---\n' + 'list:\n' + '- item1\n' + '- item2\n', conf, RULE_ID, {
+      problem1: [3, 1],
+      problem2: [4, 1],
+    });
+  });
+
+  test('implicit block sequence with anchor', () => {
+    // Tests implicit block sequence cleanup with anchors
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + '- &anchor\n' + '  value\n', conf, RULE_ID);
+    check('---\n' + '- &anchor item\n', conf, RULE_ID);
+  });
+
+  test('implicit block sequence with tag', () => {
+    // Tests implicit block sequence cleanup with tags
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + '- !tag\n' + '  value\n', conf, RULE_ID);
+    check('---\n' + '- !tag item\n', conf, RULE_ID);
+  });
+
+  test('nested implicit sequences', () => {
+    // Tests multiple levels of implicit block sequences
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + '- - nested\n' + '  - items\n', conf, RULE_ID);
+    check('---\n' + '- - - deeply\n' + '    - nested\n', conf, RULE_ID);
+  });
+
+  test('explicit key with nested sequence', () => {
+    // Tests explicit key marker with nested content
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + '? key\n' + ': value\n', conf, RULE_ID);
+    check('---\n' + '?\n' + '  key\n' + ':\n' + '  value\n', conf, RULE_ID);
+  });
+
+  test('flow in block context transitions', () => {
+    // Tests flow context entering and exiting within block context
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + 'a:\n' + '  b: {c: 1}\n' + '  d: 2\n', conf, RULE_ID);
+    check('---\n' + 'a:\n' + '  b: [1, 2]\n' + '  d: 2\n', conf, RULE_ID);
+  });
+
+  test('block entry followed by block end', () => {
+    // Tests block entry where next token is block end
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + 'a:\n' + '  - item\n', conf, RULE_ID);
+  });
+});

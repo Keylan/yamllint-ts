@@ -23,7 +23,7 @@ import {
   getUserGlobalConfigPath,
 } from '../src/cli-utils.js';
 import { YamlLintConfig } from '../src/config.js';
-import type { LintProblem } from '../src/linter.js';
+import { LintProblem } from '../src/types.js';
 import '../src/rules/index.js';
 
 let tempDir: string;
@@ -122,23 +122,11 @@ describe('CLI Utilities', () => {
   });
 
   describe('Format', () => {
-    const mockProblem: LintProblem = {
-      line: 5,
-      column: 10,
-      level: 'error',
-      rule: 'test-rule',
-      desc: 'Test description',
-      message: 'Test description (test-rule)',
-    };
+    const mockProblem = new LintProblem(5, 10, 'Test description', 'test-rule');
+    mockProblem.level = 'error';
 
-    const mockWarning: LintProblem = {
-      line: 3,
-      column: 1,
-      level: 'warning',
-      rule: 'another-rule',
-      desc: 'Warning description',
-      message: 'Warning description (another-rule)',
-    };
+    const mockWarning = new LintProblem(3, 1, 'Warning description', 'another-rule');
+    mockWarning.level = 'warning';
 
     describe('parsable', () => {
       it('should format problem in parsable format', () => {
@@ -213,14 +201,8 @@ describe('CLI Utilities', () => {
   });
 
   describe('formatProblem', () => {
-    const mockProblem: LintProblem = {
-      line: 1,
-      column: 1,
-      level: 'error',
-      rule: 'test',
-      desc: 'Test',
-      message: 'Test (test)',
-    };
+    const mockProblem = new LintProblem(1, 1, 'Test', 'test');
+    mockProblem.level = 'error';
 
     it('should format using parsable format', () => {
       const result = formatProblem(mockProblem, 'test.yaml', 'parsable');
