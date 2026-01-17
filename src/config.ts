@@ -332,7 +332,7 @@ export function validateRuleConf(rule: Rule, conf: RawRuleConfig): RuleConfig | 
 export class YamlLintConfig {
   rules: Map<string, RuleConfig | false> = new Map();
   ignore: IgnorePattern | null = null;
-  yamlFiles: IgnorePattern;
+  yamlFiles!: IgnorePattern;
   locale: string | null = null;
 
   constructor(content: string);
@@ -360,8 +360,10 @@ export class YamlLintConfig {
       }
     }
 
-    // Set default yaml-files pattern
-    this.yamlFiles = IgnorePatternImpl.fromLines(['*.yaml', '*.yml', '.yamllint']);
+    // Set default yaml-files pattern only if not already set during parse
+    if (!this.yamlFiles) {
+      this.yamlFiles = IgnorePatternImpl.fromLines(['*.yaml', '*.yml', '.yamllint']);
+    }
 
     this.validate();
   }
@@ -446,7 +448,7 @@ export class YamlLintConfig {
       throw new YamlLintConfigError(`invalid config: ${e}`);
     }
 
-    if (typeof conf !== 'object' || conf === null) {
+    if (typeof conf !== 'object' || conf === null || Array.isArray(conf)) {
       throw new YamlLintConfigError('invalid config: not a mapping');
     }
 
