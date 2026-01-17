@@ -1,6 +1,7 @@
 # yamllint-ts
 
 [![CI](https://github.com/Keylan/yamllint-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/Keylan/yamllint-ts/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/Keylan/yamllint-ts/badge.svg?branch=main)](https://coveralls.io/github/Keylan/yamllint-ts?branch=main)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)
 
 A TypeScript implementation of [yamllint](https://github.com/adrienverge/yamllint), the YAML linter.
