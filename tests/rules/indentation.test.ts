@@ -341,4 +341,71 @@ describe('indentation edge cases', () => {
     const conf = 'indentation: {spaces: 2}';
     check('---\n' + 'a:\n' + '  - item\n', conf, RULE_ID);
   });
+
+  test('block entry with next at same column on new line', () => {
+    // Tests line 360: block entry where next is on new line but same column
+    const conf = 'indentation: {spaces: 2}';
+    // This creates a situation where the next token after block entry
+    // is on a new line but at the same column as the block entry
+    check('---\n' + '-\n' + '- second\n', conf, RULE_ID);
+    check('---\n' + 'list:\n' + '  -\n' + '  - item\n', conf, RULE_ID);
+    // Empty block entry followed by another block entry at same indentation
+    check('---\n' + '-\n' + '  foo: bar\n' + '-\n' + '  baz: qux\n', conf, RULE_ID);
+    // Nested case
+    check('---\n' + 'a:\n' + '  -\n' + '  - item\n', conf, RULE_ID);
+  });
+
+  test('implicit block sequence exit with non-entry token', () => {
+    // Tests lines 516-517: double pop when exiting implicit block sequence
+    // with a non-block-entry token
+    const conf = 'indentation: {spaces: 2}';
+    // Implicit sequence followed by mapping key (triggers B_ENT + B_SEQ pop)
+    check('---\n' + 'a:\n' + '  - item\n' + 'b: value\n', conf, RULE_ID);
+    check('---\n' + 'a:\n' + '  - x\n' + '  - y\n' + 'b: 2\n', conf, RULE_ID);
+    // Single item in implicit seq followed by sibling key
+    check('---\n' + 'list:\n' + '  - only\n' + 'other: key\n', conf, RULE_ID);
+  });
+
+  test('implicit block sequence with non-entry termination', () => {
+    // Tests lines 516-517: implicit block seq ending with non-entry where next is also non-entry
+    const conf = 'indentation: {spaces: 2}';
+    // Value in implicit seq followed by document end marker
+    check('---\n' + '- item\n' + '...\n', conf, RULE_ID);
+    // Implicit seq in a mapping with stream end
+    check('---\n' + 'a:\n' + '  - x\n', conf, RULE_ID);
+  });
+
+  test('implicit block sequence with multiple items then sibling key', () => {
+    // Another test for lines 516-517: implicit block seq cleanup
+    const conf = 'indentation: {spaces: 2}';
+    check('---\n' + 'first:\n' + '  - a\n' + '  - b\n' + 'second:\n' + '  - c\n', conf, RULE_ID);
+  });
+
+  test('block scalar under explicit key', () => {
+    // Tests checkScalarIndentation with topType === KEY
+    const conf = 'indentation: {spaces: 2, check-multi-line-strings: true}';
+    check('---\n' + '? |\n' + '    multi\n' + '    line\n' + ': value\n', conf, RULE_ID);
+    check('---\n' + '? >\n' + '    multi\n' + '    line\n' + ': value\n', conf, RULE_ID);
+  });
+
+  test('block scalar under value with explicit key', () => {
+    // Tests checkScalarIndentation with topType === VAL and explicitKey
+    const conf = 'indentation: {spaces: 2, check-multi-line-strings: true}';
+    check('---\n' + '? key\n' + ': |\n' + '    multi\n' + '    line\n', conf, RULE_ID);
+    check('---\n' + '? key\n' + ': >\n' + '    multi\n' + '    line\n', conf, RULE_ID);
+  });
+
+  test('block scalar under value on new line', () => {
+    // Tests checkScalarIndentation with topType === VAL and token on new line
+    const conf = 'indentation: {spaces: 2, check-multi-line-strings: true}';
+    check('---\n' + 'key:\n' + '  |\n' + '    multi\n' + '    line\n', conf, RULE_ID);
+    check('---\n' + 'key:\n' + '  >\n' + '    multi\n' + '    line\n', conf, RULE_ID);
+  });
+
+  test('block scalar at root level', () => {
+    // Tests checkScalarIndentation default case
+    const conf = 'indentation: {spaces: 2, check-multi-line-strings: true}';
+    check('---\n' + '|\n' + '  multi\n' + '  line\n', conf, RULE_ID);
+    check('---\n' + '>\n' + '  multi\n' + '  line\n', conf, RULE_ID);
+  });
 });

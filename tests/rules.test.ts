@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import type { LintProblem } from '../src/types.js';
 
 // Import rules module to initialize the registry
-import '../src/rules/index.js';
+import * as rules from '../src/rules/index.js';
 
 import { YamlLintConfig } from '../src/config.js';
 import { run, runAll } from '../src/linter.js';
@@ -272,5 +272,49 @@ describe('linter integration', () => {
     }
     // May have problems or not, just verify iteration works
     expect(count).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('rules registry', () => {
+  describe('get', () => {
+    it('should return a rule by ID', () => {
+      const rule = rules.get('indentation');
+      expect(rule).toBeDefined();
+      expect(rule.ID).toBe('indentation');
+    });
+
+    it('should throw for unknown rule', () => {
+      expect(() => rules.get('nonexistent-rule')).toThrow('no such rule');
+    });
+  });
+
+  describe('getAllIds', () => {
+    it('should return all rule IDs', () => {
+      const ids = rules.getAllIds();
+      expect(ids).toContain('indentation');
+      expect(ids).toContain('trailing-spaces');
+      expect(ids).toContain('line-length');
+      expect(ids.length).toBeGreaterThan(10);
+    });
+  });
+
+  describe('getAll', () => {
+    it('should return all rules', () => {
+      const allRules = rules.getAll();
+      expect(allRules.length).toBeGreaterThan(10);
+      expect(allRules.every((r) => r.ID && r.TYPE)).toBe(true);
+    });
+  });
+
+  describe('exists', () => {
+    it('should return true for existing rule', () => {
+      expect(rules.exists('indentation')).toBe(true);
+      expect(rules.exists('trailing-spaces')).toBe(true);
+    });
+
+    it('should return false for non-existing rule', () => {
+      expect(rules.exists('nonexistent-rule')).toBe(false);
+      expect(rules.exists('')).toBe(false);
+    });
   });
 });

@@ -29,6 +29,52 @@ describe('linter', () => {
       expect(problem.rule).toBe('indentation');
       expect(problem.level).toBe('warning');
     });
+
+    it('should format message with rule name', () => {
+      const problem = new LintProblem(1, 1, 'test desc', 'test-rule');
+      expect(problem.message).toBe('test desc (test-rule)');
+    });
+
+    it('should format message without rule name', () => {
+      const problem = new LintProblem(1, 1, 'test desc');
+      expect(problem.message).toBe('test desc');
+    });
+
+    it('should compare equality correctly', () => {
+      const p1 = new LintProblem(1, 5, 'msg1', 'rule1');
+      const p2 = new LintProblem(1, 5, 'msg2', 'rule1'); // same line/col/rule, different msg
+      const p3 = new LintProblem(2, 5, 'msg1', 'rule1'); // different line
+      const p4 = new LintProblem(1, 6, 'msg1', 'rule1'); // different column
+      const p5 = new LintProblem(1, 5, 'msg1', 'rule2'); // different rule
+
+      expect(p1.equals(p2)).toBe(true); // message not compared
+      expect(p1.equals(p3)).toBe(false);
+      expect(p1.equals(p4)).toBe(false);
+      expect(p1.equals(p5)).toBe(false);
+    });
+
+    it('should compare for sorting correctly', () => {
+      const p1 = new LintProblem(1, 5, 'msg');
+      const p2 = new LintProblem(2, 3, 'msg');
+      const p3 = new LintProblem(1, 10, 'msg');
+      const p4 = new LintProblem(1, 5, 'msg');
+
+      // Different lines - compare by line
+      expect(p1.compareTo(p2)).toBeLessThan(0);
+      expect(p2.compareTo(p1)).toBeGreaterThan(0);
+
+      // Same line - compare by column
+      expect(p1.compareTo(p3)).toBeLessThan(0);
+      expect(p3.compareTo(p1)).toBeGreaterThan(0);
+
+      // Same line and column
+      expect(p1.compareTo(p4)).toBe(0);
+    });
+
+    it('should convert to string correctly', () => {
+      const problem = new LintProblem(5, 10, 'error message', 'my-rule');
+      expect(problem.toString()).toBe('5:10: error message (my-rule)');
+    });
   });
 
   describe('getSyntaxError', () => {

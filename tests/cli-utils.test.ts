@@ -116,8 +116,54 @@ describe('CLI Utilities', () => {
   });
 
   describe('supportsColor', () => {
+    const originalPlatform = process.platform;
+    const originalEnv = { ...process.env };
+    const originalIsTTY = process.stdout.isTTY;
+
+    afterEach(() => {
+      Object.defineProperty(process, 'platform', { value: originalPlatform });
+      process.env = { ...originalEnv };
+      Object.defineProperty(process.stdout, 'isTTY', {
+        value: originalIsTTY,
+        writable: true,
+      });
+    });
+
     it('should return a boolean', () => {
       expect(typeof supportsColor()).toBe('boolean');
+    });
+
+    it('should check ANSICON on Windows', () => {
+      Object.defineProperty(process, 'platform', { value: 'win32' });
+      process.env.ANSICON = '1';
+      delete process.env.TERM;
+      expect(supportsColor()).toBe(true);
+    });
+
+    it('should check TERM=ANSI on Windows', () => {
+      Object.defineProperty(process, 'platform', { value: 'win32' });
+      delete process.env.ANSICON;
+      process.env.TERM = 'ANSI';
+      expect(supportsColor()).toBe(true);
+    });
+
+    it('should return false on Windows without ANSICON or ANSI term', () => {
+      Object.defineProperty(process, 'platform', { value: 'win32' });
+      delete process.env.ANSICON;
+      delete process.env.TERM;
+      expect(supportsColor()).toBe(false);
+    });
+
+    it('should check isTTY on non-Windows', () => {
+      Object.defineProperty(process, 'platform', { value: 'darwin' });
+      Object.defineProperty(process.stdout, 'isTTY', { value: true, writable: true });
+      expect(supportsColor()).toBe(true);
+    });
+
+    it('should return false when not TTY on non-Windows', () => {
+      Object.defineProperty(process, 'platform', { value: 'darwin' });
+      Object.defineProperty(process.stdout, 'isTTY', { value: false, writable: true });
+      expect(supportsColor()).toBe(false);
     });
   });
 
@@ -174,9 +220,16 @@ describe('CLI Utilities', () => {
 
   describe('getEffectiveFormat', () => {
     const originalEnv = { ...process.env };
+    const originalPlatform = process.platform;
+    const originalIsTTY = process.stdout.isTTY;
 
     afterEach(() => {
       process.env = { ...originalEnv };
+      Object.defineProperty(process, 'platform', { value: originalPlatform });
+      Object.defineProperty(process.stdout, 'isTTY', {
+        value: originalIsTTY,
+        writable: true,
+      });
     });
 
     it('should return format as-is if not auto', () => {
@@ -191,12 +244,21 @@ describe('CLI Utilities', () => {
       expect(getEffectiveFormat('auto')).toBe('github');
     });
 
+    it('should return colored when supportsColor is true and not in GitHub', () => {
+      delete process.env.GITHUB_ACTIONS;
+      delete process.env.GITHUB_WORKFLOW;
+      // Force supportsColor to return true
+      Object.defineProperty(process, 'platform', { value: 'darwin' });
+      Object.defineProperty(process.stdout, 'isTTY', { value: true, writable: true });
+      expect(getEffectiveFormat('auto')).toBe('colored');
+    });
+
     it('should return standard when not in GitHub and no TTY', () => {
       delete process.env.GITHUB_ACTIONS;
       delete process.env.GITHUB_WORKFLOW;
-      // In test environment, likely no TTY
-      const result = getEffectiveFormat('auto');
-      expect(['standard', 'colored']).toContain(result);
+      Object.defineProperty(process, 'platform', { value: 'darwin' });
+      Object.defineProperty(process.stdout, 'isTTY', { value: false, writable: true });
+      expect(getEffectiveFormat('auto')).toBe('standard');
     });
   });
 
@@ -218,6 +280,12 @@ describe('CLI Utilities', () => {
     it('should format using github format', () => {
       const result = formatProblem(mockProblem, 'test.yaml', 'github');
       expect(result).toContain('::error');
+    });
+
+    it('should format using colored format', () => {
+      const result = formatProblem(mockProblem, 'test.yaml', 'colored');
+      expect(result).toContain('1:1');
+      expect(result).toContain('error');
     });
   });
 

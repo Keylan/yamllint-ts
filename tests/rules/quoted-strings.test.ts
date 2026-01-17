@@ -1125,4 +1125,43 @@ describe('quoted-strings edge cases', () => {
       'quoted-strings:\n' + '  required: only-when-needed\n' + '  extra-required: ["^http://"]\n';
     check('---\n' + 'url: http://example.com\n', conf, RULE_ID, { problem1: [2, 6] });
   });
+
+  test('hex numbers should not require quotes', () => {
+    // Test that hex numbers (0x prefix) are recognized as non-strings
+    const conf = 'quoted-strings: {required: true}';
+    check('---\n' + 'a: 0x1234\n', conf, RULE_ID);
+    check('---\n' + 'a: 0xDEADBEEF\n', conf, RULE_ID);
+    check('---\n' + 'a: 0xff\n', conf, RULE_ID);
+  });
+
+  test('infinity and nan should not require quotes', () => {
+    // Test that special float values are recognized
+    const conf = 'quoted-strings: {required: true}';
+    check('---\n' + 'a: .inf\n', conf, RULE_ID);
+    check('---\n' + 'a: -.inf\n', conf, RULE_ID);
+    check('---\n' + 'a: .nan\n', conf, RULE_ID);
+    check('---\n' + 'a: .Inf\n', conf, RULE_ID);
+    check('---\n' + 'a: .NaN\n', conf, RULE_ID);
+  });
+
+  test('floats should not require quotes', () => {
+    // Test that float values are recognized as non-strings
+    const conf = 'quoted-strings: {required: true}';
+    check('---\n' + 'a: 3.14\n', conf, RULE_ID);
+    check('---\n' + 'a: -2.5\n', conf, RULE_ID);
+    check('---\n' + 'a: +1.0\n', conf, RULE_ID);
+    check('---\n' + 'a: .5\n', conf, RULE_ID);
+    check('---\n' + 'a: 5.\n', conf, RULE_ID);
+  });
+
+  test('scientific notation should not require quotes', () => {
+    // Test that scientific notation values are recognized as non-strings
+    const conf = 'quoted-strings: {required: true}';
+    check('---\n' + 'a: 1e10\n', conf, RULE_ID);
+    check('---\n' + 'a: 1E10\n', conf, RULE_ID);
+    check('---\n' + 'a: 1e+10\n', conf, RULE_ID);
+    check('---\n' + 'a: 1e-10\n', conf, RULE_ID);
+    check('---\n' + 'a: -2e5\n', conf, RULE_ID);
+    check('---\n' + 'a: +3E-4\n', conf, RULE_ID);
+  });
 });

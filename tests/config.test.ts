@@ -627,5 +627,66 @@ rules:
         expect(rulesForSpecial.some((r) => r.ID === 'indentation')).toBe(false);
       });
     });
+
+    describe('config inheritance', () => {
+      it('should inherit rules from base config', () => {
+        // Extend default config and override one rule
+        const config = new YamlLintConfig(`
+extends: default
+rules:
+  indentation: disable
+`);
+        // Should have rules from default but indentation disabled
+        expect(config.rules.size).toBeGreaterThan(0);
+        expect(config.rules.get('indentation')).toBe(false);
+        expect(config.rules.has('trailing-spaces')).toBe(true);
+      });
+
+      it('should inherit ignore from base config when not set', () => {
+        // Create a config file that extends another with ignore patterns
+        const baseConfigFile = path.join(tempDir, 'base-ignore-config.yaml');
+        fs.writeFileSync(
+          baseConfigFile,
+          `
+extends: default
+ignore: |
+  *.generated.yaml
+  /vendor/
+`
+        );
+
+        // Child config extends base but doesn't specify ignore
+        const config = new YamlLintConfig(`extends: ${baseConfigFile}`);
+
+        // Should inherit ignore from base
+        expect(config.ignore).not.toBeNull();
+        expect(config.isFileIgnored('test.generated.yaml')).toBe(true);
+        expect(config.isFileIgnored('vendor/lib.yaml')).toBe(true);
+      });
+
+      it('should not inherit ignore when child sets its own', () => {
+        // Create a config file that extends another with ignore patterns
+        const baseConfigFile = path.join(tempDir, 'base-ignore-config2.yaml');
+        fs.writeFileSync(
+          baseConfigFile,
+          `
+extends: default
+ignore: |
+  *.base.yaml
+`
+        );
+
+        // Child config extends base but sets its own ignore
+        const config = new YamlLintConfig(`
+extends: ${baseConfigFile}
+ignore: |
+  *.child.yaml
+`);
+
+        // Should use child's ignore, not base's
+        expect(config.isFileIgnored('test.base.yaml')).toBe(false);
+        expect(config.isFileIgnored('test.child.yaml')).toBe(true);
+      });
+    });
   });
 });
