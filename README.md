@@ -1,6 +1,6 @@
 # yamllint-ts
 
-[![CI](https://github.com/jasonheld/yamllint-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/jasonheld/yamllint-ts/actions/workflows/ci.yml)
+[![CI](https://github.com/Keylan/yamllint-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/Keylan/yamllint-ts/actions/workflows/ci.yml)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)
 
 A TypeScript implementation of [yamllint](https://github.com/adrienverge/yamllint), the YAML linter.
