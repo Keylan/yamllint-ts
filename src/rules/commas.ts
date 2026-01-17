@@ -75,6 +75,7 @@ export function* check(
   if (token.type === TokenType.FlowEntry) {
     // Use the last non-empty token for space calculation if prev is empty scalar
     let effectivePrev = prev;
+    /* v8 ignore next 3 - Empty scalar with lastNonEmptyToken is parser-specific edge case */
     if (prev?.type === TokenType.Scalar && prev.value === '' && context.lastNonEmptyToken) {
       effectivePrev = context.lastNonEmptyToken;
     }

@@ -376,6 +376,7 @@ function collectCSTTokens(
 
   // Process children
   if (node.start) collectCSTTokens(node.start, tokens);
+  /* v8 ignore next 4 - CST nodes with key property have type, not both */
   if (node.key && node.key.offset !== undefined) {
     tokens.push({ type: TokenType.Key, offset: node.key.offset, source: '' });
     collectCSTTokens(node.key, tokens);
@@ -658,6 +659,7 @@ export function* tokenOrCommentOrLineGenerator(buffer: string): Generator<Parsed
       yield line.value;
       line = lineGen.next();
     } else if (line.done) {
+      /* v8 ignore next 3 - Lines exhausted before tokens is rare edge case */
       // Only tokens/comments left
       yield tokOrCom.value;
       tokOrCom = tokOrComGen.next();

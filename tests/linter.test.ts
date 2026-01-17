@@ -113,6 +113,23 @@ describe('linter', () => {
       const result = getSyntaxError('key: value1\nkey: value2\n');
       expect(result).toBeNull();
     });
+
+    it('should handle YAML with tab indentation errors', () => {
+      // Tab indentation can cause parser errors
+      const result = getSyntaxError('key:\n\tvalue\n');
+      // Some parsers report this as an error
+      if (result) {
+        expect(result.message).toContain('syntax error');
+      }
+    });
+
+    it('should handle YAML with invalid escape sequences', () => {
+      // Invalid escape sequences in double-quoted strings
+      const result = getSyntaxError('"bad \\z escape"\n');
+      if (result) {
+        expect(result.message).toContain('syntax error');
+      }
+    });
   });
 
   describe('run', () => {

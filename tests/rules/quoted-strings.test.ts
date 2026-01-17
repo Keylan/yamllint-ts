@@ -1076,16 +1076,43 @@ describe('quoted keys', () => {
 describe('quoted-strings edge cases', () => {
   test('invalid regex in extra-required', () => {
     // Invalid regex patterns should be caught and not cause crashes
-    const conf = 'quoted-strings:\n' + '  required: false\n' + '  extra-required: ["[invalid"]\n';
-    // The invalid regex should be caught and treated as non-matching
-    check('---\n' + 'foo: bar\n', conf, RULE_ID);
+    // For line 353: need only-when-needed + quoted string that doesn't need quotes
+    // + invalid regex in extra-required
+    const conf =
+      'quoted-strings:\n' + '  required: only-when-needed\n' + '  extra-required: ["[invalid"]\n';
+    // "bar" is quoted but doesn't need to be - this triggers the extra-required check
+    // The invalid regex should be caught (line 353) and treated as non-matching
+    // Since it's not extra-required AND not extra-allowed, it reports redundantly quoted
+    check('---\n' + 'foo: "bar"\n', conf, RULE_ID, { problem1: [2, 6] });
   });
 
   test('invalid regex in extra-allowed', () => {
     // Invalid regex patterns should be caught and not cause crashes
+    // For line 360: need only-when-needed + quoted string that doesn't need quotes
+    // + invalid regex in extra-allowed (line 358-360)
     const conf =
       'quoted-strings:\n' + '  required: only-when-needed\n' + '  extra-allowed: ["[invalid"]\n';
+    // Same scenario - triggers the extra-allowed check with invalid regex
     check('---\n' + 'foo: "bar"\n', conf, RULE_ID, { problem1: [2, 6] });
+  });
+
+  test('invalid regex in extra-required for unquoted value', () => {
+    // For line 378: need only-when-needed + UNquoted string + extra-required with invalid regex
+    // The unquoted path at lines 373-384 checks extra-required patterns against unquoted values
+    const conf =
+      'quoted-strings:\n' + '  required: only-when-needed\n' + '  extra-required: ["[invalid"]\n';
+    // Unquoted value - triggers the extra-required check for unquoted values (line 374-380)
+    // Invalid regex returns false (line 378), so no error is produced
+    check('---\n' + 'foo: bar\n', conf, RULE_ID);
+  });
+
+  test('invalid regex in extra-required with required: true', () => {
+    // For line 331: need required: FALSE + UNquoted string + extra-required with invalid regex
+    // When required: false and no quotes, we check extra-required at lines 327-333
+    const conf = 'quoted-strings:\n' + '  required: false\n' + '  extra-required: ["[invalid"]\n';
+    // Unquoted value with required: false - this checks extra-required patterns
+    // Invalid regex returns false (line 331), so no error is produced
+    check('---\n' + 'foo: bar\n', conf, RULE_ID);
   });
 
   test('consistent quote type', () => {
@@ -1163,5 +1190,15 @@ describe('quoted-strings edge cases', () => {
     check('---\n' + 'a: 1e-10\n', conf, RULE_ID);
     check('---\n' + 'a: -2e5\n', conf, RULE_ID);
     check('---\n' + 'a: +3E-4\n', conf, RULE_ID);
+  });
+
+  test('scalar after anchor is skipped (anchor not in validPrevTypes)', () => {
+    // Lines 217-219: when prev token is not in validPrevTypes, scalar is skipped
+    // Anchors are not in validPrevTypes, so scalars after anchors are not checked
+    // This is intentional - the rule can't determine key/value context through anchors
+    const conf = 'quoted-strings: {required: true}';
+    // These should NOT produce errors because anchor breaks the context chain
+    check('---\n' + 'a: &anchor value\n', conf, RULE_ID);
+    check('---\n' + '[&anchor value]\n', conf, RULE_ID);
   });
 });

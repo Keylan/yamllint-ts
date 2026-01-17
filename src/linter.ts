@@ -290,21 +290,25 @@ export function getSyntaxError(buffer: string): LintProblem | null {
           problem.level = 'error';
           return problem;
         } else {
+          /* v8 ignore start - yaml library always provides position info */
           // No position info, use line 1
           const problem = new LintProblem(1, 1, `syntax error: ${error.message}`);
           problem.level = 'error';
           return problem;
+          /* v8 ignore stop */
         }
       }
     }
 
     return null;
   } catch (e) {
+    /* v8 ignore start - Defensive: yaml library errors caught above */
     // Parsing failed completely
     const message = e instanceof Error ? e.message : String(e);
     const problem = new LintProblem(1, 1, `syntax error: ${message}`);
     problem.level = 'error';
     return problem;
+    /* v8 ignore stop */
   }
 }
 

@@ -152,4 +152,15 @@ describe('key-ordering', () => {
       );
     });
   });
+
+  describe('edge cases', () => {
+    it('should handle invalid regex in ignored-keys gracefully', () => {
+      // Tests line 110: catch block for invalid regex
+      const conf = 'key-ordering:\n  ignored-keys: ["[invalid"]\n';
+      // Invalid regex should be caught and treated as non-matching
+      // So keys are not ignored and ordering is enforced
+      check('---\na: 1\nb: 2\n', conf, RULE_ID);
+      check('---\nb: 1\na: 2\n', conf, RULE_ID, { problem1: [3, 1] });
+    });
+  });
 });

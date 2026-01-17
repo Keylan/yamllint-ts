@@ -73,6 +73,7 @@ function getAnchorName(token: TokenWithMarks): string {
   if (value.startsWith('&') || value.startsWith('*')) {
     return value.slice(1);
   }
+  /* v8 ignore next - Anchor/alias tokens always have & or * prefix */
   return value;
 }
 

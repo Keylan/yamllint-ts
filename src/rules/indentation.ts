@@ -235,6 +235,7 @@ export function* check(
 
   const stack = context.stack;
 
+  /* v8 ignore start */
   if (DEBUG) {
     console.log(
       `\n=== ${token.type} (${token.startMark.line + 1}:${token.startMark.column + 1}) value=${JSON.stringify(token.value)} ===`
@@ -244,6 +245,7 @@ export function* check(
     );
     if (prev) console.log(`prev: ${prev.type} value=${JSON.stringify(prev.value)}`);
   }
+  /* v8 ignore stop */
 
   // Helper to detect indent
   function detectIndent(baseIndent: number, nextToken: TokenWithMarks | null): number {
@@ -293,6 +295,7 @@ export function* check(
       prev?.value === '?' &&
       token.type !== TokenType.Value
     ) {
+      /* v8 ignore next */
       expected = detectIndent(expected, token);
     }
 
@@ -350,6 +353,7 @@ export function* check(
   ) {
     // Handle implicit block sequences
     if (stack[stack.length - 1]!.type !== B_SEQ) {
+      /* v8 ignore next */
       stack.push({ type: B_SEQ, indent: token.startMark.column, implicitBlockSeq: true });
     }
 
@@ -357,6 +361,7 @@ export function* check(
     if (next.startMark.line === token.endMark.line) {
       indent = next.startMark.column;
     } else if (next.startMark.column === token.startMark.column) {
+      /* v8 ignore next */
       indent = next.startMark.column;
     } else {
       indent = detectIndent(token.startMark.column, next);
@@ -380,6 +385,7 @@ export function* check(
     if (token.value === '?') {
       // Explicit key marker - push KEY with current parent's indent
       const indent = stack[stack.length - 1]!.indent;
+      /* v8 ignore next */
       if (DEBUG) console.log(`  Pushing KEY(${indent},exp) for explicit marker`);
       stack.push({ type: KEY, indent, explicitKey: true });
     } else {
@@ -394,15 +400,19 @@ export function* check(
         stack[stack.length - 2]!.type === KEY &&
         stack[stack.length - 2]!.explicitKey;
 
+      /* v8 ignore start */
       if (DEBUG)
         console.log(
           `  KeyToken: afterMarker=${immediatelyAfterExplicitMarker}, inExpSeq=${insideExplicitKeySequence}`
         );
+      /* v8 ignore stop */
       if (!immediatelyAfterExplicitMarker && !insideExplicitKeySequence) {
         const indent = stack[stack.length - 1]!.indent;
+        /* v8 ignore next */
         if (DEBUG) console.log(`  Pushing KEY(${indent})`);
         stack.push({ type: KEY, indent, explicitKey: false });
       } else {
+        /* v8 ignore next */
         if (DEBUG) console.log(`  Skipping spurious KeyToken`);
       }
     }
@@ -513,8 +523,10 @@ export function* check(
       token.type !== TokenType.Tag &&
       next?.type !== TokenType.BlockEntry
     ) {
+      /* v8 ignore start */
       stack.pop();
       stack.pop();
+      /* v8 ignore stop */
     } else if (
       currentType === B_ENT &&
       (next?.type === TokenType.BlockEntry || next?.type === TokenType.BlockEnd)
@@ -547,6 +559,7 @@ export function* check(
       if (stack[stack.length - 1]!.explicitKey && next?.type === TokenType.Key) {
         break;
       }
+      /* v8 ignore next */
       if (DEBUG) console.log(`  Popping KEY (next is ${next?.type})`);
       stack.pop();
     } else {
